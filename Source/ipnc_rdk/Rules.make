@@ -16,6 +16,7 @@ endif
 
 SYSTEM_PLATFORM  := CSK
 
+
 # Build configuration
 #APP_BUILD_CFG    := debug
 APP_BUILD_CFG   := release
@@ -23,6 +24,7 @@ APP_BUILD_CFG   := release
 # Binary to boot from NAND or SDCARD  , default is sd
 #BINARY_MODE   := nand
 BINARY_MODE   := sd
+
 # Choose the target platform that is needed
 # Values are "DM388" and "DM8127"
 IPNC_DEVICE    := DM388
@@ -30,13 +32,14 @@ IPNC_DEVICE    := DM388
 
 
 # Values are "LOW_POWER" and "FULL_FEATURE"
-#IPNC_CONFIG := FULL_FEATURE
-IPNC_CONFIG := LOW_POWER
+IPNC_CONFIG := FULL_FEATURE
+#IPNC_CONFIG := LOW_POWER
 
-# Memory foot print
+# Memory foot print	7/28/22 DAT
 MEMORY_CONFIG := 512MB
+#MEMORY_CONFIG := 256MB
 
-IMGS_ID := IMGS_MICRON_AR0331
+IMGS_ID := IMGS_MICRON_AR0522
 
 # TILER Memory enable
 IPNC_TILER_ENABLE := NO
@@ -278,6 +281,11 @@ ifeq ($(IMGS_ID), IMGS_MICRON_AR0330)
     CAPTURE_MODE:= MIPI_CSI2
 endif
 ifeq ($(IMGS_ID), IMGS_SONY_IMX140)
+    CAPTURE_MODE:= MIPI_CSI2
+endif
+
+# 10/15/22 DAT
+ifeq ($(IMGS_ID), IMGS_MICRON_AR0522)
     CAPTURE_MODE:= MIPI_CSI2
 endif
 
