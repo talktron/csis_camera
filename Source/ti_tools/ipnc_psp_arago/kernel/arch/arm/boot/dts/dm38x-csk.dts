@@ -1,0 +1,475 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+/dts-v1/;
+
+#include "ti81xx.dtsi"
+#include <dt-bindings/interrupt-controller/irq.h>
+
+/ {
+	model = "DM38X CSK";
+	compatible = "ti,dm38x-csk", "ti,ti81xx";
+
+	memory {
+		device_type = "memory";
+		reg = <0x80000000 0x40000000>;	/* 1 GB */
+	};
+
+	vmmc_reg: regulator@0 {
+		/* TO DO */
+		/* Confirm if max and min voltages need to be different */
+		compatible = "regulator-fixed";
+		regulator-name = "vmmc";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-always-on;
+	};
+
+	wlan_en_reg: fixedregulator@1 {
+		compatible = "regulator-fixed";
+		regulator-name = "wlan-en-regulator";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		startup-delay-us = <70000>;
+
+		/* WLAN_EN GPIO for this board GP2[6] */
+		/* gpio0-gpio3 are defined as gpio1-gpio4 in ti81xx.dtsi.*/
+		gpio = <&gpio3 6 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+	};
+
+	vaux2_reg: regulator@10 {
+		compatible = "regulator-fixed";
+		regulator-name = "vaux2";
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+		regulator-always-on;
+	};
+
+	vdummy_5v0_reg: regulator@11 {
+		compatible = "regulator-fixed";
+		regulator-name = "vdummy_5v0";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		regulator-always-on;
+	};
+
+	vdummy_3v3_reg: regulator@12 {
+		compatible = "regulator-fixed";
+		regulator-name = "vdummy_3v3";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-always-on;
+	};
+
+	sound {
+		compatible = "ti,ti81xx-audio";
+		ti,model = "TI81XX-CSK";
+		ti,audio-codec = <&tlv320aic3104>;
+		ti,mcasp-controller = <&mcasp1>;
+		ti,codec-clock-rate = <24576000>;
+		ti,audio-routing =
+			"MIC2L", "Mic Bias",
+			"MIC2R", "Mic Bias";
+	};
+
+	cpus {
+		cpu@0 {
+			cpu-supply = <&vdd1_reg>;
+		};
+	};
+};
+
+&ti81xx_pincntl {
+	nandflash_pins_s0: nandflash_pins_s0 {
+		pinctrl-single,pins = <
+			0x1FC (PULL_UP | MUX_MODE0)/* GPMC_ADV_ALE */
+			0x1E4 (PULL_UP | MUX_MODE0)/* GPMC_CS0 */
+			0x1F0 (PULL_UP | MUX_MODE0)/* GPMC_CS3 */
+			0x160 (MUX_MODE0)/* GPMC_D0-D15 */
+			0x164 (MUX_MODE0)
+			0x168 (MUX_MODE0)
+			0x16C (MUX_MODE0)
+			0x170 (MUX_MODE0)
+			0x174 (MUX_MODE0)
+			0x178 (MUX_MODE0)
+			0x17C (MUX_MODE0)
+			0x180 (MUX_MODE0)
+			0x184 (MUX_MODE0)
+			0x188 (MUX_MODE0)
+			0x18C (MUX_MODE0)
+			0x190 (MUX_MODE0)
+			0x194 (MUX_MODE0)
+			0x198 (MUX_MODE0)
+			0x19C (MUX_MODE0)
+			0x200 (PULL_UP | MUX_MODE0)/* GPMC_OE_RE */
+			0x204 (PULL_UP | MUX_MODE0)/* GPMC_WE */
+			0x208 (PULL_DOWN | MUX_MODE0)/* GPMC_BE0_CLE */
+			0x210 (PULL_UP | MUX_MODE0)
+		>;
+	};
+
+	i2c0_pins: pinmux_i2c0_pins{
+		pinctrl-single,pins =<
+			0x418 (PULL_UP | MUX_MODE0)
+			0x41c (PULL_UP | MUX_MODE0)
+		>;
+	};
+
+	mmc0_pins: pinmux_mmc0_pins {
+		pinctrl-single,pins = <
+			0x1C (PULL_UP | MUX_MODE0)      /* SD0_CLK */
+			0x20 (PULL_UP | MUX_MODE0)      /* SD0_CMD */
+			0x24 (PULL_UP | MUX_MODE0)      /* SD0_DAT[0] */
+			0x28 (PULL_UP | MUX_MODE0)      /* SD0_DAT[1] */
+			0x2C (PULL_UP | MUX_MODE0)      /* SD0_DAT[2] */
+			0x30 (PULL_UP | MUX_MODE0)      /* SD0_DAT[3] */
+		>;
+	};
+
+	wlan_pins_default: pinmux_wlan_pins_default {
+		pinctrl-single,pins = <
+			0x1A4 (MUX_MODE7)		/* GP2[6] Ball:M2 WLAN_EN. OUTPUT PULLDOWN */
+			0x1A8 (PULL_UP | MUX_MODE7) 	/* GP1[13] Ball:M3 WLAN_IRQ. INPUT PULLUP */
+		>;
+	};
+
+	/* BT pins need to be in right state even if BT is not used, else they can interfere with WLAN operation */
+	bt_pins_default: pinmux_bt_pins_default {
+		pinctrl-single,pins = <
+			0x1A0 (MUX_MODE7)		/* GP2[5] Ball:M1 BT_EN. OUTPUT PULLDOWN */
+			0x54  (PULL_UP | MUX_MODE0)	/* MCA[0]_AXR[1] Ball:AE31 Connects to BT_AUD_OUT Input pin PULLDOWN */
+		>;
+	};
+
+	mmc1_pins: pinmux_mmc1_pins {
+		pinctrl-single,pins = <
+			0x00 (PULL_UP | MUX_MODE0)      /* SD1_CLK */
+			0x04 (PULL_UP | MUX_MODE0)      /* SD1_CMD */
+			0x08 (PULL_UP | MUX_MODE0)      /* SD1_DAT[0] */
+			0x0C (PULL_UP | MUX_MODE0)      /* SD1_DAT[1] */
+			0x10 (PULL_UP | MUX_MODE0)      /* SD1_DAT[2] */
+			0x14 (PULL_UP | MUX_MODE0)      /* SD1_DAT[3] */
+			0x13C (PULL_UP | MUX_MODE1)     /* SD1_SDCD */
+		>;
+	};
+
+	usb0_pins: pinmux_usb0_pins {
+		pinctrl-single,pins = < 0x434 (PULL_UP | MUX_MODE0) >;
+	};
+
+	i2c1_pins: pinmux_i2c1_pins{
+		pinctrl-single,pins =<
+			0x134 (MUX_MODE0)
+			0x138 (MUX_MODE0)
+		>;
+	};
+
+	mcasp1_pins: pinmux_mcasp1_pins{
+		pinctrl-single,pins =<
+			0x038 (PULL_DOWN | MUX_MODE2)
+			0x078 (PULL_DOWN | MUX_MODE0)
+			0x07c (PULL_DOWN | MUX_MODE0)
+			0x088 (PULL_DOWN | MUX_MODE0)
+			0x08c (PULL_DOWN | MUX_MODE0)
+
+		>;
+	};
+
+	tps65911_nmi_pin: pinmux_nmi_pin {
+		pinctrl-single,pins = < 0x410 (PULL_UP | MUX_MODE0) >;
+	};
+};
+
+&edma {
+        ti,edma-memcpy-channels = <4 5 6 7 12 13 14 15 40 41 46 47 54 55 56 57 62 63>;
+	ti,edma-reserved-slot-ranges = <0 2>, <4 4>, <12 12>, <26 13>, <40 2>, <46 2>, <54 4>, <62 2>;
+};
+
+&uart1 {
+	status = "okay";
+};
+
+&wdt1 {
+	status = "okay";
+};
+
+&davinci_mdio {
+	phy0_ethernet: ethernet-phy@25 {
+		reg = <25>;
+		phy_mmd_indirect_write;
+		ti,rx-internal-delay = <8>;
+		ti,tx-internal-delay = <0xa>;
+		ti,fifo-depth = <1>;
+	};
+};
+
+&cpsw_emac0 {
+	phy_id = <&davinci_mdio>, <25>;
+	phy-mode = "gmii";
+	phy-handle = <&phy0_ethernet>;
+};
+
+&i2c1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c0_pins>, <&tps65911_nmi_pin>;
+
+	pmic: tps65911@2d {
+		compatible = "ti,tps65911";
+		reg = <0x2d>;
+
+		interrupts = <7>;
+		#interrupt-cells = <2>;
+		interrupt-controller;
+
+		ti,system-power-controller;
+
+		#gpio-cells = <2>;
+		gpio-controller;
+
+		vcc1-supply = <&vdummy_3v3_reg>;
+		vcc2-supply = <&vdummy_3v3_reg>;
+		vcc3-supply = <&vdummy_5v0_reg>;
+		vcc4-supply = <&vdummy_5v0_reg>;
+		vcc5-supply = <&vdummy_5v0_reg>;
+		vcc6-supply = <&vdummy_3v3_reg>;
+		vcc7-supply = <&vdummy_5v0_reg>;
+		vccio-supply = <&vdummy_3v3_reg>;
+
+		regulators {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			vdd1_reg: vdd1 {
+				regulator-name = "tps_cvdd_arm";
+				regulator-min-microvolt = <0600000>;
+				regulator-max-microvolt = <1500000>;
+				regulator-always-on;
+			};
+
+			vdd2_reg: vdd2 {
+				regulator-name = "tps_cvdd_hdvicp";
+				regulator-min-microvolt = <0600000>;
+				regulator-max-microvolt = <1500000>;
+				regulator-always-on;
+			};
+
+			vddctrl_reg: vddctrl {
+				regulator-name = "tps_core_cvdd";
+				regulator-min-microvolt = <0600000>;
+				regulator-max-microvolt = <1450000>;
+				regulator-always-on;
+			};
+		};
+	};
+
+};
+
+&i2c2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c1_pins>;
+
+	tlv320aic3104: tlv320aic3104@18 {
+		#sound-dai-cells = <0>;
+		compatible = "ti,tlv320aic3104";
+		reg = <0x18>;
+		ai3x-micbias-vg = <2>;
+		status = "okay";
+		AVDD-supply = <&vmmc_reg>;
+		IOVDD-supply = <&vmmc_reg>;
+		DRVDD-supply = <&vmmc_reg>;
+		DVDD-supply = <&vaux2_reg>;
+
+	};
+};
+
+&elm {
+	status = "okay";
+};
+
+&gpmc {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&nandflash_pins_s0>;
+	ranges = <0 0 0x08000000 0x10000000>;	/* CS0: 256MB for NAND */
+	nand@0,0 {
+		compatible = "ti,omap2-nand";
+		reg = <0 0 4>; /* CS0, offset 0, IO size 4 */
+		interrupt-parent = <&gpmc>;
+		interrupts = <0 IRQ_TYPE_NONE>, /* fifoevent */
+			     <1 IRQ_TYPE_NONE>;	/* termcount */
+		rb-gpios = <&gpmc 0 GPIO_ACTIVE_HIGH>; /* gpmc_wait0 */
+		ti,nand-ecc-opt = "bch8";
+		ti,elm-id = <&elm>;
+		nand-bus-width = <16>;
+		gpmc,device-width = <2>;
+		gpmc,sync-clk-ps = <0>;
+		gpmc,cs-on-ns = <0>;
+		gpmc,cs-rd-off-ns = <44>;
+		gpmc,cs-wr-off-ns = <44>;
+		gpmc,adv-on-ns = <6>;
+		gpmc,adv-rd-off-ns = <34>;
+		gpmc,adv-wr-off-ns = <44>;
+		gpmc,we-on-ns = <0>;
+		gpmc,we-off-ns = <36>;
+		gpmc,oe-on-ns = <0>;
+		gpmc,oe-off-ns = <54>;
+		gpmc,access-ns = <63>;
+		gpmc,rd-cycle-ns = <81>;
+		gpmc,wr-cycle-ns = <81>;
+		gpmc,bus-turnaround-ns = <0>;
+		gpmc,cycle2cycle-delay-ns = <0>;
+		gpmc,clk-activation-ns = <0>;
+		gpmc,wr-access-ns = <36>;
+		gpmc,wr-data-mux-bus-ns = <0>;
+		/* MTD partition table */
+		/* All SPL-* partitions are sized to minimal length
+		 * which can be independently programmable. For
+		 * NAND flash this is equal to size of erase-block */
+		#address-cells = <1>;
+		#size-cells = <1>;
+		partition@0 {
+			label = "NAND.SPL";
+			reg = <0x00000000 0x000020000>;
+		};
+		partition@1 {
+			label = "NAND.u-boot";
+			reg = <0x00020000 0x00400000>;
+		};
+		partition@2 {
+			label = "NAND.u-boot-env";
+			reg = <0x00420000 0x00020000>;
+		};
+		partition@3 {
+			label = "NAND.kernel";
+			reg = <0x00440000 0x00600000>;
+		};
+		partition@4 {
+			label = "NAND.file-system";
+			reg = <0x00A40000 0x0C000000>;
+		};
+		partition@5 {
+			label = "NAND.u-boot-spl-os";
+			reg = <0x0CA40000 0x00040000>;
+		};
+                partition@6 {
+                        label = "NAND.data";
+                        reg = <0x0CA80000 0x00C00000>;
+                };
+                partition@7 {
+                        label = "NAND.reserved";
+                        reg = <0x0D680000 0x02980000>;
+                };
+	};
+};
+
+
+&usb {
+	pinctrl-names = "default";
+	pinctrl-0 = <&usb0_pins>;
+	status = "okay";
+};
+
+&usb_ctrl_mod {
+	status = "okay";
+};
+
+&usb0_phy {
+	status = "okay";
+};
+
+&cppi41dma {
+	status = "okay";
+};
+
+&usb0 {
+	status = "okay";
+};
+
+&usb_dpll_div5_ck {
+	clock-div = <1>;
+};
+
+&osc1_clkin_ck {
+	clock-frequency = <27000000>;
+};
+&gmac0to1_mux_out_ck {
+	clocks = <&satass_50m_ck>, <&sata1ss_50m_ck>;
+};
+&emac_rmii_fck {
+	clocks = <&gmac0to1_mux_out_ck>, <&cpts_rft_div5_ck>;
+};
+&clkout_prcm_mux_ck {
+	clocks = <&dummy_clk_ck>, <&usb_dpll_ck>,
+		<&video0_dpll_ck>, <&rtc_divider_ck>;
+};
+&sys_clkout1 {
+	clocks = <&clkout_prcm_ck>, <&satass_125m_ck>,
+		<&pciess_125m_ck>, <&hdvpss_proc_d2_fck>,
+		<&iss_dpll_d2_ck>, <&l3_dpll_ck>, <&devosc_ck>,
+		<&osc1_clkin_ck>, <&mpu_ck>, <&dummy_clk_ck>,
+		<&rcosc_32k_ck>;
+};
+&sys_clkout2 {
+	clocks = <&clkout_prcm_ck>, <&satass_125m_ck>,
+		<&pciess_125m_ck>, <&hdvpss_proc_d2_fck>,
+		<&iss_dpll_d2_ck>, <&l3_dpll_ck>, <&devosc_ck>,
+		<&osc1_clkin_ck>, <&mpu_ck>, <&dummy_clk_ck>,
+		<&rcosc_32k_ck>;
+};
+
+&mmc0 {
+	status = "okay";
+	vmmc-supply = <&wlan_en_reg>;
+	ti,needs-special-hs-handling;
+	ti,non-removable;
+        ti,dual-volt;
+	bus-width = <4>;
+	cap-power-off-card;
+	keep-power-in-suspend;
+	pinctrl-names = "default";
+	pinctrl-0 = <&mmc0_pins &wlan_pins_default &bt_pins_default>;
+
+	#address-cells = <1>;
+	#size-cells = <0>;
+	wlcore: wlcore@0 {
+		compatible = "ti,wl1837";
+		reg = <2>;
+		/* WLAN_IRQ GPIO for this board GP1[13] */
+		/* gpio0-gpio3 are defined as gpio1-gpio4 in ti81xx.dtsi.*/
+		interrupt-parent = <&gpio2>;
+		interrupts = <13 IRQ_TYPE_LEVEL_HIGH>;
+	};
+};
+
+&mmc1 {
+	status = "okay";
+	vmmc-supply = <&vmmc_reg>;
+	bus-width = <4>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&mmc1_pins>;
+};
+
+
+&vpss {
+	cpu_name = "CPU_DM813X";
+};
+&mcasp1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&mcasp1_pins>;
+	#sound-dai-cells = <0>;
+	status = "okay";
+	op-mode = <0>;    /* MCASP_IIS_MODE */
+	tdm-slots = <2>;
+	tx-num-evt = <64>;
+	rx-num-evt = <64>;
+	serial-dir = <  /* 0: INACTIVE, 1: TX, 2: RX */
+		1 2 0 0
+		0 0 0 0
+		0 0 0 0
+		0 0 0 0
+	>;
+
+};
