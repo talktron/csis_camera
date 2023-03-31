@@ -1286,6 +1286,8 @@ Void ispDrvSetOneShotMode(Iss_IspObj *pObj)
 	isif_reg->SLV0 = 8;
 #elif defined IMGS_MICRON_AR0331
 	isif_reg->SLV0 = 2;
+#elif defined IMGS_MICRON_AR0522		
+	isif_reg->SLV0 = 2;			// 7/29/22 DAT
 #endif
 
     // RSZ register setting
