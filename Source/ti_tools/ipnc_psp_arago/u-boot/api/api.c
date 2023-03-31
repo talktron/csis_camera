@@ -16,8 +16,8 @@
 
 #include "api_private.h"
 
-#define DEBUG
-#undef DEBUG
+#define DEBUG	
+//#undef DEBUG		6/9/22 DAT
 
 /*****************************************************************************
  *
