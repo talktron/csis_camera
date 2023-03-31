@@ -154,6 +154,8 @@ static int wl12xx_sdio_power_on(struct wl12xx_sdio_glue *glue)
 	struct sdio_func *func = dev_to_sdio_func(glue->dev);
 	struct mmc_card *card = func->card;
 
+	printk(KERN_DEBUG "<<<<<<<< wlcore_sdio: 'wl12xx_sdio_power_on' >>>>>>>" );		// 2/7/23 DAT
+
 	ret = pm_runtime_get_sync(&card->dev);
 	if (ret) {
 		/*
@@ -181,6 +183,8 @@ static int wl12xx_sdio_power_off(struct wl12xx_sdio_glue *glue)
 	int ret;
 	struct sdio_func *func = dev_to_sdio_func(glue->dev);
 	struct mmc_card *card = func->card;
+
+	printk(KERN_DEBUG "<<<<<<<< wlcore_sdio: 'wl12xx_sdio_power_off' >>>>>>>" );		// 2/7/23 DAT
 
 	sdio_claim_host(func);
 	sdio_disable_func(func);
@@ -271,6 +275,8 @@ static int wl1271_probe(struct sdio_func *func,
 	int ret = -ENOMEM;
 	int irq;
 	const char *chip_family;
+
+	printk(KERN_DEBUG "<<<<<<< wlcore_sdio: 'wl1271_probe' >>>>>>>" );		// 2/7/23 DAT
 
 	/* We are only able to handle the wlan function */
 	if (func->num != 0x02)

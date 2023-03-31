@@ -6165,6 +6165,8 @@ static int wl1271_init_ieee80211(struct wl1271 *wl)
 		WL1271_CIPHER_SUITE_GEM,
 	};
 
+	wl1271_info( "<<<<<<< 'wl1271_init_ieee80211' >>>>>>>" );		// 2/7/23 DAT
+
 	/* The tx descriptor buffer */
 	wl->hw->extra_tx_headroom = sizeof(struct wl1271_tx_hw_descr);
 

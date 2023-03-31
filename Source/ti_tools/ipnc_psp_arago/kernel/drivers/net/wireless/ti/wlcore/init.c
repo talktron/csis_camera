@@ -39,6 +39,8 @@ int wl1271_init_templates_config(struct wl1271 *wl)
 	int ret, i;
 	size_t max_size;
 
+	wl1271_info( "<<<<<<< 'wl1271_init_templates_config' >>>>>>>" );		// 3/1/23 DAT
+
 	/* send empty templates for fw memory reservation */
 	ret = wl1271_cmd_template_set(wl, WL12XX_INVALID_ROLE_ID,
 				      wl->scan_templ_id_2_4, NULL,
@@ -162,6 +164,8 @@ static int wl1271_ap_init_deauth_template(struct wl1271 *wl,
 	int ret;
 	u32 rate;
 
+	wl1271_info( "<<<<<<< 'wl1271_ap_init_deauth_template' >>>>>>>" );		// 3/1/23 DAT
+
 	tmpl = kzalloc(sizeof(*tmpl), GFP_KERNEL);
 	if (!tmpl) {
 		ret = -ENOMEM;
@@ -188,6 +192,8 @@ static int wl1271_ap_init_null_template(struct wl1271 *wl,
 	struct ieee80211_hdr_3addr *nullfunc;
 	int ret;
 	u32 rate;
+
+	wl1271_info( "<<<<<<< 'wl1271_ap_init_null_template' >>>>>>>" );		// 3/1/23 DAT
 
 	nullfunc = kzalloc(sizeof(*nullfunc), GFP_KERNEL);
 	if (!nullfunc) {
@@ -222,6 +228,8 @@ static int wl1271_ap_init_qos_null_template(struct wl1271 *wl,
 	int ret;
 	u32 rate;
 
+	wl1271_info( "<<<<<<< 'wl1271_ap_init_qos_null_template' >>>>>>>" );		// 3/1/23 DAT
+
 	qosnull = kzalloc(sizeof(*qosnull), GFP_KERNEL);
 	if (!qosnull) {
 		ret = -ENOMEM;
@@ -251,6 +259,8 @@ static int wl12xx_init_rx_config(struct wl1271 *wl)
 {
 	int ret;
 
+	wl1271_info( "<<<<<<< 'wl12xx_init_rx_config' >>>>>>>" );		// 3/1/23 DAT
+
 	ret = wl1271_acx_rx_msdu_life_time(wl);
 	if (ret < 0)
 		return ret;
@@ -262,6 +272,8 @@ static int wl12xx_init_phy_vif_config(struct wl1271 *wl,
 					    struct wl12xx_vif *wlvif)
 {
 	int ret;
+
+	wl1271_info( "<<<<<<< 'wl12xx_init_phy_vif_config' >>>>>>>" );		// 3/1/23 DAT
 
 	ret = wl1271_acx_slot(wl, wlvif, DEFAULT_SLOT_TIME);
 	if (ret < 0)
@@ -283,6 +295,8 @@ static int wl1271_init_sta_beacon_filter(struct wl1271 *wl,
 {
 	int ret;
 
+	wl1271_info( "<<<<<<< 'wl1271_init_sta_beacon_filter' >>>>>>>" );		// 3/1/23 DAT
+
 	ret = wl1271_acx_beacon_filter_table(wl, wlvif);
 	if (ret < 0)
 		return ret;
@@ -299,6 +313,8 @@ int wl1271_init_pta(struct wl1271 *wl)
 {
 	int ret;
 
+	wl1271_info( "<<<<<<< 'wl1271_init_pta' >>>>>>>" );		// 3/1/23 DAT
+
 	ret = wl12xx_acx_sg_cfg(wl);
 	if (ret < 0)
 		return ret;
@@ -314,6 +330,8 @@ int wl1271_init_energy_detection(struct wl1271 *wl)
 {
 	int ret;
 
+	wl1271_info( "<<<<<<< 'wl1271_init_energy_detection' >>>>>>>" );		// 3/1/23 DAT
+
 	ret = wl1271_acx_cca_threshold(wl);
 	if (ret < 0)
 		return ret;
@@ -326,6 +344,8 @@ static int wl1271_init_beacon_broadcast(struct wl1271 *wl,
 {
 	int ret;
 
+	wl1271_info( "<<<<<<< 'wl1271_init_beacon_broadcast' >>>>>>>" );		// 3/1/23 DAT
+
 	ret = wl1271_acx_bcn_dtim_options(wl, wlvif);
 	if (ret < 0)
 		return ret;
@@ -336,6 +356,8 @@ static int wl1271_init_beacon_broadcast(struct wl1271 *wl,
 static int wl12xx_init_fwlog(struct wl1271 *wl)
 {
 	int ret;
+
+	wl1271_info( "<<<<<<< 'wl12xx_init_fwlog' >>>>>>>" );		// 3/1/23 DAT
 
 	if (wl->quirks & WLCORE_QUIRK_FWLOG_NOT_IMPLEMENTED)
 		return 0;
@@ -351,6 +373,8 @@ static int wl12xx_init_fwlog(struct wl1271 *wl)
 int wl1271_sta_hw_init(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 {
 	int ret;
+
+	wl1271_info( "<<<<<<< 'wl1271_sta_hw_init' >>>>>>>" );		// 3/1/23 DAT
 
 	/* PS config */
 	ret = wl12xx_acx_config_ps(wl, wlvif);
@@ -375,6 +399,8 @@ static int wl1271_sta_hw_init_post_mem(struct wl1271 *wl,
 	struct wl12xx_vif *wlvif = wl12xx_vif_to_data(vif);
 	int ret;
 
+	wl1271_info( "<<<<<<< 'wl1271_sta_hw_init_post_mem' >>>>>>>" );		// 3/1/23 DAT
+
 	/* disable the keep-alive feature */
 	ret = wl1271_acx_keep_alive_mode(wl, wlvif, false);
 	if (ret < 0)
@@ -387,6 +413,8 @@ static int wl1271_sta_hw_init_post_mem(struct wl1271 *wl,
 static int wl1271_ap_hw_init(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 {
 	int ret;
+
+	wl1271_info( "<<<<<<< 'wl1271_ap_hw_init' >>>>>>>" );		// 2/7/23 DAT
 
 	ret = wl1271_init_ap_rates(wl, wlvif);
 	if (ret < 0)
@@ -404,6 +432,8 @@ int wl1271_ap_init_templates(struct wl1271 *wl, struct ieee80211_vif *vif)
 {
 	struct wl12xx_vif *wlvif = wl12xx_vif_to_data(vif);
 	int ret;
+
+	wl1271_info( "<<<<<<< 'wl1271_ap_init_templates' >>>>>>>" );		// 3/1/23 DAT
 
 	ret = wl1271_ap_init_deauth_template(wl, wlvif);
 	if (ret < 0)
@@ -431,6 +461,8 @@ int wl1271_ap_init_templates(struct wl1271 *wl, struct ieee80211_vif *vif)
 static int wl1271_ap_hw_init_post_mem(struct wl1271 *wl,
 				      struct ieee80211_vif *vif)
 {
+	wl1271_info( "<<<<<<< 'wl1271_ap_hw_init_post_mem' >>>>>>>" );		// 3/1/23 DAT
+
 	return wl1271_ap_init_templates(wl, vif);
 }
 
@@ -439,6 +471,8 @@ int wl1271_init_ap_rates(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 	int i, ret;
 	struct conf_tx_rate_class rc;
 	u32 supported_rates;
+
+	wl1271_info( "<<<<<<< 'wl1271_init_ap_rates' >>>>>>>" );		// 3/1/23 DAT
 
 	wl1271_debug(DEBUG_AP, "AP basic rate set: 0x%x",
 		     wlvif->basic_rate_set);
@@ -495,6 +529,8 @@ int wl1271_init_ap_rates(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 
 static int wl1271_set_ba_policies(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 {
+	wl1271_info( "<<<<<<< 'wl1271_set_ba_policies' >>>>>>>" );		// 3/1/23 DAT
+
 	/* Reset the BA RX indicators */
 	wlvif->ba_allowed = true;
 	wl->ba_rx_session_count = 0;
@@ -516,6 +552,8 @@ static int wl1271_set_ba_policies(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 static int wl12xx_init_sta_role(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 {
 	int ret;
+
+	wl1271_info( "<<<<<<< 'wl12xx_init_sta_role' >>>>>>>" );		// 3/1/23 DAT
 
 	ret = wl1271_acx_group_address_tbl(wl, wlvif, true, NULL, 0);
 	if (ret < 0)
@@ -549,6 +587,8 @@ static int wl12xx_init_ap_role(struct wl1271 *wl, struct wl12xx_vif *wlvif)
 {
 	int ret;
 
+	wl1271_info( "<<<<<<< 'wl12xx_init_ap_role' >>>>>>>" );		// 2/7/23 DAT
+
 	ret = wl1271_acx_ap_max_tx_retry(wl, wlvif);
 	if (ret < 0)
 		return ret;
@@ -571,7 +611,11 @@ int wl1271_init_vif_specific(struct wl1271 *wl, struct ieee80211_vif *vif)
 
 	/* consider all existing roles before configuring psm. */
 
+	wl1271_info( "<<<<<<< 'wl1271_init_vif_specific' is_ap=%d >>>>>>>", is_ap );		// 2/21/23 DAT
+
 	if (wl->ap_count == 0 && is_ap) { /* first AP */
+		wl1271_info( "<<<<<<< 'wl1271_init_vif_specific' 1st AP >>>>>>>" );		// 2/21/23 DAT
+
 		ret = wl1271_acx_sleep_auth(wl, WL1271_PSM_ELP);
 		if (ret < 0)
 			return ret;
@@ -583,6 +627,8 @@ int wl1271_init_vif_specific(struct wl1271 *wl, struct ieee80211_vif *vif)
 			return ret;
 	/* first STA, no APs */
 	} else if (wl->sta_count == 0 && wl->ap_count == 0 && !is_ap) {
+		wl1271_info( "<<<<<<< 'wl1271_init_vif_specific' 1st STA, no AP >>>>>>>" );		// 2/21/23 DAT
+
 		u8 sta_auth = wl->conf.conn.sta_sleep_auth;
 		/* Configure for power according to debugfs */
 		if (sta_auth != WL1271_PSM_ILLEGAL)
@@ -597,6 +643,8 @@ int wl1271_init_vif_specific(struct wl1271 *wl, struct ieee80211_vif *vif)
 
 	/* Mode specific init */
 	if (is_ap) {
+		wl1271_info( "<<<<<<< 'wl1271_init_vif_specific' 'is_ap' >>>>>>>" );		// 2/20/23 DAT
+
 		ret = wl1271_ap_hw_init(wl, wlvif);
 		if (ret < 0)
 			return ret;
@@ -605,6 +653,8 @@ int wl1271_init_vif_specific(struct wl1271 *wl, struct ieee80211_vif *vif)
 		if (ret < 0)
 			return ret;
 	} else {
+		wl1271_info( "<<<<<<< 'wl1271_init_vif_specific' 'is_sta' >>>>>>>" );		// 2/20/23 DAT
+		
 		ret = wl1271_sta_hw_init(wl, wlvif);
 		if (ret < 0)
 			return ret;
@@ -668,6 +718,8 @@ int wl1271_init_vif_specific(struct wl1271 *wl, struct ieee80211_vif *vif)
 int wl1271_hw_init(struct wl1271 *wl)
 {
 	int ret;
+
+	wl1271_info( "<<<<<<< 'wl1271_hw_init' >>>>>>>" );		// 2/7/23 DAT
 
 	/* Chip-specific hw init */
 	ret = wl->ops->hw_init(wl);
