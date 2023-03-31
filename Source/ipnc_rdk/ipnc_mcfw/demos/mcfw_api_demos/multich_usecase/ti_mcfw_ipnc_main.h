@@ -112,7 +112,8 @@ typedef enum {
     AL_AL30210,
     OM_OV2710,
     SN_IMX122,
-    SN_IMX140
+    SN_IMX140,
+	MT_AR0522			// 6/28/22 DAT
 } UI_SENSOR_MODE;
 
 typedef enum {

@@ -772,6 +772,12 @@ int main(int argc, char **argv)
     gUI_mcfw_config.sensorId = MT_9M034;
 #endif
 
+// 6/28/22 DAT
+#ifdef IMGS_MICRON_AR0522
+	OSA_printf("ti_mcfw_ipnc_main: AR0522 selected\n");
+	gUI_mcfw_config.sensorId = MT_AR0522;
+#endif
+
     gUI_mcfw_config.audioCfg.enable     = FALSE;
     gUI_mcfw_config.audioCfg.shutdown   = FALSE;
     gUI_mcfw_config.audioCfg.sampleRate = 8000;
