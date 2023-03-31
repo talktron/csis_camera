@@ -59,7 +59,9 @@
 
 #define ISS_CA_BOARD_A1_IO_EXP_I2C_ADDR (0x21u)
 
-#define ISS_PLATFORM_EVM_I2C_INST_ID    (ISS_DEVICE_I2C_INST_ID_2)
+// For CSIS board:
+//#define ISS_PLATFORM_EVM_I2C_INST_ID    (ISS_DEVICE_I2C_INST_ID_2)
+#define ISS_PLATFORM_EVM_I2C_INST_ID    (ISS_DEVICE_I2C_INST_ID_0)
 
 /** \brief PLL Control Module Base Address*/
 #define ISS_CONTROL_MODULE_PLL_CTRL_BASE_ADDR   (CSL_TI814x_PLL_BASE)
@@ -231,6 +233,8 @@ Int32 Iss_platformTI814xInit(Iss_PlatformInitParams * initParams)
 {
     Int32 status = FVID2_SOK;
 
+    Vps_printf("<<<<<<< Iss_platformTI814xInit >>>>>>>\n");	// 8/22/22 DAT
+
     Iss_platformTI814xSetPinMux();
 
 #ifdef POWER_OPT_DSS_OFF
@@ -289,6 +293,8 @@ static Int32 Iss_platformTI814xSetIntMux(void)
     int_mux |= (4 << 24);
     REG32(CSL_TI814x_CTRL_MODULE_BASE + 0x0f64) = int_mux;
 
+    Vps_printf("Iss_platformTI814xSetIntMux: int_mux= 0x%08X\n", int_mux);	// 8/31/22 DAT
+
     return (FVID2_SOK);
 }
 #endif
@@ -345,7 +351,9 @@ Int32 Iss_platformTI814xDeviceInit(Iss_PlatformDeviceInitParams * initPrms)
 
     Vps_DeviceInitParams deviceInitPrm;
 
-#ifdef POWER_OPT_DSS_OFF
+    Vps_printf("<<<<<<< %s: %s: >>>>>>>\n", __FILE__, __FUNCTION__);	// 9/6/22 DAT
+
+//#ifdef POWER_OPT_DSS_OFF		9/6/22 DAT
     UInt8 i2cCnt = 0;
 
     /* TI814x has 4 I2C instances. */
@@ -375,11 +383,15 @@ Int32 Iss_platformTI814xDeviceInit(Iss_PlatformDeviceInitParams * initPrms)
     }
     deviceInitPrm.isI2cInitReq = initPrms->isI2cInitReq;
 
+
     /* TI814x uses only I2C[2], so modify the sampling frequency */
+    /* CSIS uses I2C[0] */
     deviceInitPrm.i2cRegs[ISS_PLATFORM_EVM_I2C_INST_ID]
-        = (Ptr) CSL_TI814x_I2C2_BASE;
+//        = (Ptr) CSL_TI814x_I2C2_BASE;
+        = (Ptr) CSL_TI814x_I2C0_BASE;				// 9/6/22 DAT
     deviceInitPrm.i2cIntNum[ISS_PLATFORM_EVM_I2C_INST_ID]
-        = CSL_INTC_EVENTID_I2CINT2;
+//        = CSL_INTC_EVENTID_I2CINT2;
+        = CSL_INTC_EVENTID_I2CINT0;				// 9/6/22 DAT
     deviceInitPrm.i2cClkKHz[ISS_PLATFORM_EVM_I2C_INST_ID] = 400;
 #ifdef TI_8107_BUILD
 #ifdef _IPNC_HW_PLATFORM_EVM_
@@ -387,7 +399,14 @@ Int32 Iss_platformTI814xDeviceInit(Iss_PlatformDeviceInitParams * initPrms)
         = 50;
 #endif
 #endif
-#endif
+
+//#endif	// 9/6/22 DAT
+
+    Vps_printf("<<<<<<< %s: using i2c%d (0x%08X) @%dkHz >>>>>>>\n", 
+	__FUNCTION__,
+        ISS_PLATFORM_EVM_I2C_INST_ID,
+        deviceInitPrm.i2cRegs[ISS_PLATFORM_EVM_I2C_INST_ID],
+        deviceInitPrm.i2cClkKHz[ISS_PLATFORM_EVM_I2C_INST_ID] );	// 9/6/22 DAT
 
     status = Iss_deviceInit(&deviceInitPrm);
 
@@ -472,6 +491,7 @@ UInt8 Iss_platformTI814xGetSensorI2cAddr(UInt32 vidDecId, UInt32 vipInstId)
     UInt8 devAddr = 0x0;
 
 #ifdef BOARD_AP_IPNC
+    UInt8 devAddrAr0522[ISS_CAPT_INST_MAX] = { 0x10 };		// 7/29/22 DAT
     UInt8 devAddrAr0331[ISS_CAPT_INST_MAX] = { 0x10 };
     UInt8 devAddrMn34041[ISS_CAPT_INST_MAX] = { 0x10 };
     UInt8 devAddrImx035[ISS_CAPT_INST_MAX] = { 0x10 };
@@ -494,6 +514,7 @@ UInt8 Iss_platformTI814xGetSensorI2cAddr(UInt32 vidDecId, UInt32 vipInstId)
     UInt8 devAddrAl30210[ISS_CAPT_INST_MAX] = { 0x21 };
 #endif
 #ifdef BOARD_TI_EVM
+    UInt8 devAddrAr0522[ISS_CAPT_INST_MAX] = { 0x10 };		// 7/29/22 DAT
     UInt8 devAddrAr0331[ISS_CAPT_INST_MAX] = { 0x10 };
     UInt8 devAddrMn34041[ISS_CAPT_INST_MAX] = { 0x10 };
     UInt8 devAddrImx035[ISS_CAPT_INST_MAX] = { 0x10 };
@@ -518,6 +539,13 @@ UInt8 Iss_platformTI814xGetSensorI2cAddr(UInt32 vidDecId, UInt32 vipInstId)
 
     switch (vidDecId)
     {
+        case FVID2_ISS_SENSOR_AR0522_DRV:			// 7/29/22 DAT
+            devAddr = devAddrAr0522[vipInstId];
+	    Vps_printf("<<<<<<< Iss_platformTI814xGetSensorI2cAddr -- vipInstId=%d, \
+		devAddrAR0522[vipInstId]= %x >>>>>>>\n",
+	        vipInstId, devAddr );			// 8/22/22 DAT
+            break;
+
         case FVID2_ISS_SENSOR_AR0331_DRV:
             devAddr = devAddrAr0331[vipInstId];
             break;
@@ -629,6 +657,8 @@ UInt8 Iss_platformTI814xGetSensorI2cAddr(UInt32 vidDecId, UInt32 vipInstId)
  */
 static Int32 Iss_platformTI814xSetPinMux(void)
 {
+	Vps_printf("<<<<<<< Iss_platformTI814xSetPinMux >>>>>>>\n");	// 8/22/22 DAT
+
 #ifdef CBB_PLATFORM
 	//
 #else
@@ -699,6 +729,7 @@ static Int32 Iss_platformTI814xSetPinMux(void)
     REG32(CSL_TI814x_CTRL_MODULE_BASE + 0x0BBC) = 0x1;     /* vin1a_d[5] */
     REG32(CSL_TI814x_CTRL_MODULE_BASE + 0x0BC0) = 0x40001; /* vin1a_d[6] */
     REG32(CSL_TI814x_CTRL_MODULE_BASE + 0x0BC4) = 0x40001; /* vin1a_d[7] */
+
 /* I2c2 configuration Function 6 */
 /* TI_814X_BUILD indicated DM814X/DM8127 platform */
 #if defined(TI_814X_BUILD)
@@ -727,7 +758,6 @@ static Int32 Iss_platformTI814xSetPinMux(void)
 
 /* TI_8107_BUILD indicated DM38X platform */
 #if defined(TI_8107_BUILD)
-
 /* Check to differentiate bw CSK and non csk platforms (ex: ipnc) */
 #if defined(TI_DM38X_CSK)
         #ifdef IMGS_MICRON_AR0331
@@ -735,6 +765,13 @@ static Int32 Iss_platformTI814xSetPinMux(void)
 	REG32(CSL_TI814x_CTRL_MODULE_BASE + 0x0928) = 0xE0020; /* i2c2_sda_mux0 */
 	REG32(CSL_TI814x_CTRL_MODULE_BASE + 0x0A18) = 0xE0001;
 	REG32(CSL_TI814x_CTRL_MODULE_BASE + 0x0A1C) = 0xE0001;
+	#endif
+	#ifdef IMGS_MICRON_AR0522	/* TODO: CSIS board uses i2c0   7/29/22 DAT */
+        REG32(CSL_TI814x_CTRL_MODULE_BASE + 0x0C18) = 0xC0001; /* i2c0_scl_mux0 */
+	REG32(CSL_TI814x_CTRL_MODULE_BASE + 0x0C1C) = 0xC0001; /* i2c0_sda_mux0 */
+//	REG32(CSL_TI814x_CTRL_MODULE_BASE + 0x0A18) = 0xE0001; /* N/A, initialized earlier */
+//	REG32(CSL_TI814x_CTRL_MODULE_BASE + 0x0A1C) = 0xE0001; /* N/A, initialized earlier */
+	Vps_printf("<<<<<<< Iss_platformTI814xSetPinMux: AR0522 TI_8107_BUILD >>>>>>>\n");	// 8/22/22 DAT
 	#endif
 #else /* All other platform except TI_DM38X_CSK goes here */
 	#if defined IMGS_MICRON_MT9M034
@@ -749,8 +786,8 @@ static Int32 Iss_platformTI814xSetPinMux(void)
 	REG32(CSL_TI814x_CTRL_MODULE_BASE + 0x0A18) = 0xE0040;
 	REG32(CSL_TI814x_CTRL_MODULE_BASE + 0x0A1C) = 0xE0040;
 	#endif
-#endif //TI_DM38X_CSK
 
+#endif //TI_DM38X_CSK
 #endif
 
     /* TODO Find proper place for this Set the divider for the SYSCLK10 */
