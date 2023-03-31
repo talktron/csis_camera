@@ -142,6 +142,7 @@ OCMC0_ADDR              = 0x00300000;
 OCMC1_ADDR              = 0x00400000;
 OCMC_SIZE               = 128*KB;
 
+/*
 LINUX_SIZE              = 130.625*MB;
 SYSLINK_IPC_SIZE        = 16*MB;
 DSS_M3_DATA_SIZE        = 53*MB;
@@ -153,6 +154,21 @@ FRAME_BUFFER_SIZE       = 250*MB;
 HDVPSS_DESC_SIZE        = 2*MB;
 HDVPSS_SHARED_SIZE      = 2*MB;
 NOTIFY_SHARED_SIZE      = 1*MB;
+*/
+
+/* Modified map for CSIS 256MB */
+LINUX_SIZE              = 70.625*MB;
+SYSLINK_IPC_SIZE        = 16*MB;
+DSS_M3_DATA_SIZE        = 20*MB;
+DSS_M3_CODE_SIZE        = 20*MB;
+DEBUG_SIZE              = 1*MB;
+
+TILER_8BIT_SIZE         = 1*MB;
+FRAME_BUFFER_SIZE       = 122*MB;
+HDVPSS_DESC_SIZE        = 2*MB;
+HDVPSS_SHARED_SIZE      = 2*MB;
+NOTIFY_SHARED_SIZE      = 1*MB;
+
 
 
 LINUX_ADDR              = DDR3_ADDR_0;
