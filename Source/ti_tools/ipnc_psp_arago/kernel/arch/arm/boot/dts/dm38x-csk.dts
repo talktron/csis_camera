@@ -36,8 +36,13 @@
 
 		/* WLAN_EN GPIO for this board GP2[6] */
 		/* gpio0-gpio3 are defined as gpio1-gpio4 in ti81xx.dtsi.*/
-		gpio = <&gpio3 6 GPIO_ACTIVE_HIGH>;
+/*		gpio = <&gpio3 6 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
+*/
+		/* WLAN_EN GPIO for CSIS board GP1[12]		7/11/22 DAT*/
+		gpio = <&gpio2 12 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+
 	};
 
 	vaux2_reg: regulator@10 {
@@ -87,7 +92,8 @@
 		pinctrl-single,pins = <
 			0x1FC (PULL_UP | MUX_MODE0)/* GPMC_ADV_ALE */
 			0x1E4 (PULL_UP | MUX_MODE0)/* GPMC_CS0 */
-			0x1F0 (PULL_UP | MUX_MODE0)/* GPMC_CS3 */
+//			0x1F0 (PULL_UP | MUX_MODE0)/* GPMC_CS3 */
+			0x1F0 (PULL_UP | MUX_MODE7)/* GPMC_WPn GP1[26] 8/5/22 DAT */
 			0x160 (MUX_MODE0)/* GPMC_D0-D15 */
 			0x164 (MUX_MODE0)
 			0x168 (MUX_MODE0)
@@ -107,17 +113,18 @@
 			0x200 (PULL_UP | MUX_MODE0)/* GPMC_OE_RE */
 			0x204 (PULL_UP | MUX_MODE0)/* GPMC_WE */
 			0x208 (PULL_DOWN | MUX_MODE0)/* GPMC_BE0_CLE */
-			0x210 (PULL_UP | MUX_MODE0)
+			0x210 (PULL_UP | MUX_MODE0)/* GPMC_WAIT[0] */
 		>;
 	};
 
 	i2c0_pins: pinmux_i2c0_pins{
 		pinctrl-single,pins =<
-			0x418 (PULL_UP | MUX_MODE0)
-			0x41c (PULL_UP | MUX_MODE0)
+			0x418 (PULL_UP | MUX_MODE0)		/* pincntl263 0x418= 262*4 		7/11/22 DAT */
+			0x41c (PULL_UP | MUX_MODE0)		/* pincntl264 0x41C= 263*4 */
 		>;
 	};
 
+	/* mmc0/sd0 is for WLAN */
 	mmc0_pins: pinmux_mmc0_pins {
 		pinctrl-single,pins = <
 			0x1C (PULL_UP | MUX_MODE0)      /* SD0_CLK */
@@ -130,20 +137,30 @@
 	};
 
 	wlan_pins_default: pinmux_wlan_pins_default {
+//		pinctrl-single,pins = <
+//			0x1A4 (MUX_MODE7)		/* GP2[6] Ball:M2 WLAN_EN. OUTPUT PULLDOWN */
+//			0x1A8 (PULL_UP | MUX_MODE7) 	/* GP1[13] Ball:M3 WLAN_IRQ. INPUT PULLUP */
+//		>;
+		/* WLAN_EN GPIO for CSIS board GP1[12]		7/11/22 DAT*/
 		pinctrl-single,pins = <
-			0x1A4 (MUX_MODE7)		/* GP2[6] Ball:M2 WLAN_EN. OUTPUT PULLDOWN */
-			0x1A8 (PULL_UP | MUX_MODE7) 	/* GP1[13] Ball:M3 WLAN_IRQ. INPUT PULLUP */
+			0x3A4 (MUX_MODE7)				/* GP1[12] pincntl234 WLAN_EN. OUTPUT PULLDOWN 0x3A4= 233*4 */
+			0x3A0 (PULL_UP | MUX_MODE7) 	/* GP1[11] pincntl233 WLAN_IRQ. INPUT PULLUP 0x3A0= 232*4 */
 		>;
 	};
 
 	/* BT pins need to be in right state even if BT is not used, else they can interfere with WLAN operation */
 	bt_pins_default: pinmux_bt_pins_default {
+//		pinctrl-single,pins = <
+//			0x1A0 (MUX_MODE7)		/* GP2[5] Ball:M1 BT_EN. OUTPUT PULLDOWN */
+//			0x54  (PULL_UP | MUX_MODE0)	/* MCA[0]_AXR[1] Ball:AE31 Connects to BT_AUD_OUT Input pin PULLDOWN */
+//		>;
+		/* BT_EN GPIO for CSIS board GP2[12]		7/11/22 DAT*/
 		pinctrl-single,pins = <
-			0x1A0 (MUX_MODE7)		/* GP2[5] Ball:M1 BT_EN. OUTPUT PULLDOWN */
-			0x54  (PULL_UP | MUX_MODE0)	/* MCA[0]_AXR[1] Ball:AE31 Connects to BT_AUD_OUT Input pin PULLDOWN */
+			0x248 (MUX_MODE7)				/* GP2[12] pincntl147 BT_EN. OUTPUT PULLDOWN 0x248= 146*4 */
 		>;
 	};
 
+	/* mmc1/sd1 is for SD Card */
 	mmc1_pins: pinmux_mmc1_pins {
 		pinctrl-single,pins = <
 			0x00 (PULL_UP | MUX_MODE0)      /* SD1_CLK */
@@ -152,7 +169,7 @@
 			0x0C (PULL_UP | MUX_MODE0)      /* SD1_DAT[1] */
 			0x10 (PULL_UP | MUX_MODE0)      /* SD1_DAT[2] */
 			0x14 (PULL_UP | MUX_MODE0)      /* SD1_DAT[3] */
-			0x13C (PULL_UP | MUX_MODE1)     /* SD1_SDCD */
+			0x13C (PULL_UP | MUX_MODE1)     /* SD1_SDCD  GP1.6 pincntl80 0x13C= 79*4 */
 		>;
 	};
 
@@ -162,8 +179,8 @@
 
 	i2c1_pins: pinmux_i2c1_pins{
 		pinctrl-single,pins =<
-			0x134 (MUX_MODE0)
-			0x138 (MUX_MODE0)
+			0x134 (MUX_MODE0)		/* pincntl78 0x134=  77*4 		7/11/22 DAT */
+			0x138 (MUX_MODE0)		/* pincntl79 0x138=  78*4 */
 		>;
 	};
 
@@ -179,7 +196,7 @@
 	};
 
 	tps65911_nmi_pin: pinmux_nmi_pin {
-		pinctrl-single,pins = < 0x410 (PULL_UP | MUX_MODE0) >;
+		pinctrl-single,pins = < 0x410 (PULL_UP | MUX_MODE0) >;		/* pincntl261 0x410= 260*4   7/11/22 DAT */
 	};
 };
 
@@ -212,9 +229,15 @@
 	phy-handle = <&phy0_ethernet>;
 };
 
-&i2c1 {
+/* On CSIS board, roles of i2c1 and i2c2 are reversed w.r.t. hardware itself
+ * i.e., tps65911 is connected to hardware i2c1_pins
+ */
+//&i2c1 {
+ &i2c2 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&i2c0_pins>, <&tps65911_nmi_pin>;
+
+//	pinctrl-0 = <&i2c0_pins>, <&tps65911_nmi_pin>;
+	pinctrl-0 = <&i2c1_pins>, <&tps65911_nmi_pin>;
 
 	pmic: tps65911@2d {
 		compatible = "ti,tps65911";
@@ -267,9 +290,14 @@
 
 };
 
-&i2c2 {
+/* On CSIS board, roles of i2c1 and i2c2 are reversed w.r.t. hardware itself
+ * i.e., tlv320 codec is connected to hardware i2c0_pins
+ */
+//&i2c2 {
+ &i2c1 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&i2c1_pins>;
+//	pinctrl-0 = <&i2c1_pins>;
+	pinctrl-0 = <&i2c0_pins>;
 
 	tlv320aic3104: tlv320aic3104@18 {
 		#sound-dai-cells = <0>;
@@ -293,7 +321,8 @@
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&nandflash_pins_s0>;
-	ranges = <0 0 0x08000000 0x10000000>;	/* CS0: 256MB for NAND */
+//	ranges = <0 0 0x08000000 0x10000000>;	/* CS0: 256MB for NAND */
+	ranges = <0 0 0x08000000 0x20000000>;	/* CS0: 512MB for NAND 8/5/22 DAT */
 	nand@0,0 {
 		compatible = "ti,omap2-nand";
 		reg = <0 0 4>; /* CS0, offset 0, IO size 4 */
@@ -356,11 +385,13 @@
 		};
                 partition@6 {
                         label = "NAND.data";
-                        reg = <0x0CA80000 0x00C00000>;
+//                        reg = <0x0CA80000 0x00C00000>;	// 8/18/22 DAT
+                        reg = <0x0CA80000 0x00D00000>;
                 };
                 partition@7 {
                         label = "NAND.reserved";
-                        reg = <0x0D680000 0x02980000>;
+//                        reg = <0x0D680000 0x02980000>;	// 8/18/22 DAT
+                        reg = <0x0D780000 0x12880000>;
                 };
 	};
 };
@@ -429,6 +460,7 @@
 	bus-width = <4>;
 	cap-power-off-card;
 	keep-power-in-suspend;
+	max-frequency = <16000000>;		// 7/26/22 DAT
 	pinctrl-names = "default";
 	pinctrl-0 = <&mmc0_pins &wlan_pins_default &bt_pins_default>;
 
@@ -437,10 +469,12 @@
 	wlcore: wlcore@0 {
 		compatible = "ti,wl1837";
 		reg = <2>;
-		/* WLAN_IRQ GPIO for this board GP1[13] */
+		/* WLAN_IRQ GPIO for DM388CSK board GP1[13] */
+		/* WLAN_IRQ GPIO for CSIS board GP1[11]				7/26/22 DAT */
 		/* gpio0-gpio3 are defined as gpio1-gpio4 in ti81xx.dtsi.*/
 		interrupt-parent = <&gpio2>;
-		interrupts = <13 IRQ_TYPE_LEVEL_HIGH>;
+//		interrupts = <13 IRQ_TYPE_LEVEL_HIGH>;
+		interrupts = <11 IRQ_TYPE_LEVEL_HIGH>;		// 7/26/22 DAT
 	};
 };
 
