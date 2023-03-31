@@ -14,6 +14,11 @@
 #include <ti/psp/devices/src/vpsdrv_devicePriv.h>
 #include "issdrv_devicePriv.h"
 
+// 7/29/22 DAT
+#ifdef IMGS_MICRON_AR0522
+#include "ti/psp/devices/ar0522/issdrv_ar0522.h"
+#endif
+
 #ifdef IMGS_MICRON_MT9J003
 #include "ti/psp/devices/mt9j003/issdrv_mt9j003.h"
 #endif
@@ -171,6 +176,9 @@ Int32 Iss_deviceInit(Vps_DeviceInitParams * pPrm)
 		status = Vps_deviceRawRead8(Vps_platformGetI2cInstId(), 0x20, regValue, 2u);
 #endif
 #endif
+#ifdef IMGS_MICRON_AR0522
+            Iss_Ar0522PinMux();			// 7/29/22 DAT
+#endif
 #ifdef IMGS_MICRON_AR0331
             Iss_Ar0331PinMux();
 #endif
@@ -244,6 +252,9 @@ Int32 Iss_deviceInit(Vps_DeviceInitParams * pPrm)
 
             else if (ISS_PLATFORM_BOARD_VCAM == boardId)
             {
+#ifdef IMGS_MICRON_AR0522
+                status |= Iss_Ar0522Init();			// 7/29/22 DAT
+#endif
 #ifdef IMGS_MICRON_MT9J003
                 status |= Iss_Mt9j003Init();
 #endif
@@ -354,6 +365,9 @@ Int32 Iss_deviceDeInit()
     }
     else if (ISS_PLATFORM_BOARD_VCAM == boardId)
     {
+#ifdef IMGS_MICRON_AR0522
+        status |= Iss_Ar0522DeInit();			// 7/29/22 DAT
+#endif
 #ifdef IMGS_MICRON_MT9J003
         status |= Iss_Mt9j003DeInit();
 #endif
