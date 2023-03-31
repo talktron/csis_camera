@@ -1156,7 +1156,10 @@ static int mount_ubifs(struct ubifs_info *c)
 
 	err = init_constants_early(c);
 	if (err)
+	{
+		ubifs_err(c, "<<<<<<< 'mount_ubifs' fail, err=%d >>>>>>>", err );	// 8/11/22 DAT
 		return err;
+	}
 
 	err = ubifs_debugging_init(c);
 	if (err)
@@ -1991,6 +1994,7 @@ static struct ubifs_info *alloc_ubifs_info(struct ubi_volume_desc *ubi)
 
 		ubi_get_volume_info(ubi, &c->vi);
 		ubi_get_device_info(c->vi.ubi_num, &c->di);
+
 	}
 	return c;
 }
@@ -2002,6 +2006,7 @@ static int ubifs_fill_super(struct super_block *sb, void *data, int silent)
 	int err;
 
 	c->vfs_sb = sb;
+
 	/* Re-open the UBI device in read-write mode */
 	c->ubi = ubi_open_volume(c->vi.ubi_num, c->vi.vol_id, UBI_READWRITE);
 	if (IS_ERR(c->ubi)) {
