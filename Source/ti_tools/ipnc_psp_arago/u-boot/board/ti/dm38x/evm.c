@@ -1,7 +1,7 @@
 /*
  * evm.c
  *
- * Board functions for DM38X CSK
+ * Functions for custom DM388 CSIS board
  *
  * Copyright (C) 2011, Texas Instruments, Incorporated - http://www.ti.com/
  *
@@ -41,8 +41,14 @@ DECLARE_GLOBAL_DATA_PTR;
 #define MODE_RMII		0x305
 #define GIGABIT_MODE		7
 
+#define GPIO0_OE_REG		(TI81XX_GPIO0_BASE + 0x134)
+#define GPIO0_CLRDATA		(TI81XX_GPIO0_BASE + 0x190)
+#define GPIO0_SETDATA		(TI81XX_GPIO0_BASE + 0x194)
+
 #define GPIO1_OE_REG		(TI81XX_GPIO1_BASE + 0x134)
 #define GPIO1_CLRDATA		(TI81XX_GPIO1_BASE + 0x190)
+#define GPIO1_SETDATA		(TI81XX_GPIO1_BASE + 0x194)
+
 #define GPIO2_OE_REG		(TI81XX_GPIO2_BASE + 0x134)
 #define GPIO2_CLRDATA		(TI81XX_GPIO2_BASE + 0x190)
 #define GPIO2_SETDATA		(TI81XX_GPIO2_BASE + 0x194)
@@ -50,6 +56,8 @@ DECLARE_GLOBAL_DATA_PTR;
 #define MCASP_AHCLK_CLKSRC	(PLL_SUBSYS_BASE + 0x2D4)
 #define AHCLKX_SRC_OSC1		0x240
 
+// CSIS board uses same TPS65911 I2C address
+// and same VDD!, VDD2, and VDDCTR regs
 #define PMIC_SLAVE_ADDRESS	0x2D
 #define PMIC_VDD1_OP_REG	0x22
 #define CVDD_ARM_REG		(PMIC_VDD1_OP_REG)
@@ -71,71 +79,67 @@ static const struct dmm_lisa_map_regs evm_lisa_map_regs = {
 	.dmm_lisa_map_3			= 0x80600100,
 };
 
-/* DDR3 Configuration */
-static const struct cmd_control evm_ddr3_cctrl_data = {
-	.cmd0csratio	= 0x80,
-	.cmd0iclkout	= 0x00,
+/* DDR2 Configuration */
+static const struct cmd_control evm_ddr2_cctrl_data = {
+	.cmd0csratio	= 0x80,		// CMD0_REG_PHY_CTRL_SLAVE_RATIO_0
+	.cmd0iclkout	= 0x00,		// CMD0_REG_PHY_INVERT_CLKOUT_0
 
-	.cmd1csratio	= 0x80,
-	.cmd1iclkout	= 0x00,
+	.cmd1csratio	= 0x80,		// CMD1_REG_PHY_CTRL_SLAVE_RATIO_0
+	.cmd1iclkout	= 0x00,		// CMD1_REG_PHY_INVERT_CLKOUT_0
 
-	.cmd2csratio	= 0x80,
-	.cmd2iclkout	= 0x00,
+	.cmd2csratio	= 0x80,		// CMD2_REG_PHY_CTRL_SLAVE_RATIO_0
+	.cmd2iclkout	= 0x00,		// CMD2_REG_PHY_INVERT_CLKOUT_0
 };
 
-static const struct ddr_data evm_ddr3_data[4] = {
-{
-	.datardsratio0      = ((0x3D<<10) | (0x3D<<0)),
-	.datawdsratio0      = ((0x4A<<10) | (0x4A<<0)),
-	.datawiratio0       = 0,
-	.datagiratio0       = 0,
-	.datafwsratio0      = ((0x91<<10) | (0x91<<0)),
-	.datawrsratio0      = ((0x8A<<10) | (0x8A<<0)),
+static const struct emif_regs evm_ddr2_emif0_regs = {
+//	.sdram_config			= 0x40801ab2,
+	.sdram_config			= 0x438056b2,	// dm388_csis, x16 SDRAM, CAS latency 5, 50 ohm
+//	.ref_ctrl			= 0x10000c30,
+	.ref_ctrl			= 0x00000c30,	// dm388_csis, enable init and refresh
+//	.sdram_tim1			= 0x0aaaf552,
+	.sdram_tim1			= 0x088B159A,	// dm388_csis
+//	.sdram_tim2			= 0x043631d2,
+	.sdram_tim2			= 0x105131D2,	// dm388_csis
+//	.sdram_tim3			= 0x00000327,
+	.sdram_tim3			= 0x500004DF,	// dm388_csis
+//	.emif_ddr_phy_ctlr_1		= 0x00000007
+	.emif_ddr_phy_ctlr_1		= 0x00103208	// dm388_csis
+};
+
+static const struct ddr_data evm_ddr2_data[4] = {
+{	.datardsratio0		= ((0x35<<10) | (0x35<<0)),	// DATA0_REG_PHY_RD_DQS_SLAVE_RATIO_0
+	.datawdsratio0		= ((0x20<<10) | (0x20<<0)),	// DATA0_REG_PHY_WR_DQS_SLAVE_RATIO_0
+	.datawiratio0		= ((0<<10) | (0<<0)),		// DATA0_REG_PHY_WRLVL_INIT_RATIO_0
+	.datagiratio0		= ((0<<10) | (0<<0)),		// DATA0_REG_PHY_GATELVL_INIT_RATIO_0
+	.datafwsratio0		= ((0x90<<10) | (0x90<<0)),	// DATA0_REG_PHY_FIFO_WE_SLAVE_RATIO_0
+	.datawrsratio0		= ((0x50<<10) | (0x50<<0))	// DATA0_REG_PHY_WR_DATA_SLAVE_RATIO_0
 },
 {
-	.datardsratio0      = ((0x3E<<10) | (0x3E<<0)),
-	.datawdsratio0      = ((0x4A<<10) | (0x4A<<0)),
-	.datawiratio0       = 0,
-	.datagiratio0       = 0,
-	.datafwsratio0      = ((0x98<<10) | (0x98<<0)),
-	.datawrsratio0      = ((0x87<<10) | (0x87<<0)),
+	.datardsratio0		= ((0x35<<10) | (0x35<<0)),	// DATA1_REG_PHY_RD_DQS_SLAVE_RATIO_0
+	.datawdsratio0		= ((0x20<<10) | (0x20<<0)),	// DATA1_REG_PHY_WR_DQS_SLAVE_RATIO_0
+	.datawiratio0		= ((0<<10) | (0<<0)),		// DATA1_REG_PHY_WRLVL_INIT_RATIO_0
+	.datagiratio0		= ((0<<10) | (0<<0)),		// DATA1_REG_PHY_GATELVL_INIT_RATIO_0
+	.datafwsratio0		= ((0x90<<10) | (0x90<<0)),	// DATA1_REG_PHY_FIFO_WE_SLAVE_RATIO_0
+	.datawrsratio0		= ((0x50<<10) | (0x50<<0)),	// DATA1_REG_PHY_WR_DATA_SLAVE_RATIO_0
 },
 {
-	.datardsratio0      = ((0x3C<<10) | (0x3C<<0)),
-	.datawdsratio0      = ((0x51<<10) | (0x51<<0)),
-	.datawiratio0       = 0,
-	.datagiratio0       = 0,
-	.datafwsratio0      = ((0x9A<<10) | (0x9A<<0)),
-	.datawrsratio0      = ((0x88<<10) | (0x88<<0)),
+	.datardsratio0		= ((0x35<<10) | (0x35<<0)),	// DATA2_REG_PHY_RD_DQS_SLAVE_RATIO_0
+	.datawdsratio0		= ((0x20<<10) | (0x20<<0)),	// DATA2_REG_PHY_WR_DQS_SLAVE_RATIO_0
+	.datawiratio0		= ((0<<10) | (0<<0)),		// DATA2_REG_PHY_WRLVL_INIT_RATIO_0
+	.datagiratio0		= ((0<<10) | (0<<0)),		// DATA2_REG_PHY_GATELVL_INIT_RATIO_0
+	.datafwsratio0		= ((0x90<<10) | (0x90<<0)),	// DATA2_REG_PHY_FIFO_WE_SLAVE_RATIO_0
+	.datawrsratio0		= ((0x50<<10) | (0x50<<0)),	// DATA2_REG_PHY_WR_DATA_SLAVE_RATIO_0
 },
 {
-	.datardsratio0      = ((0x37<<10) | (0x37<<0)),
-	.datawdsratio0      = ((0x51<<10) | (0x51<<0)),
-	.datawiratio0       = 0,
-	.datagiratio0       = 0,
-	.datafwsratio0      = ((0x99<<10) | (0x99<<0)),
-	.datawrsratio0      = ((0x88<<10) | (0x88<<0)),
+	.datardsratio0		= ((0x35<<10) | (0x35<<0)),	// DATA3_REG_PHY_RD_DQS_SLAVE_RATIO_0
+	.datawdsratio0		= ((0x20<<10) | (0x20<<0)),	// DATA3_REG_PHY_WR_DQS_SLAVE_RATIO_0
+	.datawiratio0		= ((0<<10) | (0<<0)),		// DATA3_REG_PHY_WRLVL_INIT_RATIO_0
+	.datagiratio0		= ((0<<10) | (0<<0)),		// DATA3_REG_PHY_GATELVL_INIT_RATIO_0
+	.datafwsratio0		= ((0x90<<10) | (0x90<<0)),	// DATA3_REG_PHY_FIFO_WE_SLAVE_RATIO_0
+	.datawrsratio0		= ((0x50<<10) | (0x50<<0)),	// DATA3_REG_PHY_WR_DATA_SLAVE_RATIO_0
 }
 };
 
-static const struct emif_regs evm_ddr3_emif0_regs = {
-#ifdef CONFIG_DDR_533_MHZ
-	.sdram_config            = 0x61C11A32,
-	.ref_ctrl		 = 0x0000103D,
-	.sdram_tim1		 = 0x0EEF2673,
-	.sdram_tim2		 = 0x308F7FDA,
-	.sdram_tim3		 = 0x507F88AF,
-	.emif_ddr_phy_ctlr_1	 = 0x00170209
-#else
-	/* DDR 400Mhz */
-	.sdram_config			= 0x61C11A32,
-	.ref_ctrl			= 0x00000C30,
-	.sdram_tim1			= 0x0AAAD4F3,
-	.sdram_tim2			= 0x206B7FDA,
-	.sdram_tim3			= 0x507F869F,
-	.emif_ddr_phy_ctlr_1		= 0x00170209
-#endif
-};
 
 void set_uart_mux_conf(void)
 {
@@ -151,15 +155,18 @@ void set_mux_conf_regs(void)
 	/* Set MMC pins */
 	enable_mmc_pin_mux();
 
+	// TODO:  CSIS does not use Ethernet
 	/* Set Ethernet pins */
 	enable_enet_pin_mux();
 
 	/* Set GPMC pins */
 	enable_gpmc_pin_mux();
 
+	// TODO:  CSIS uses different GPIO pins
 	/* Set GPIO pins */
 	enable_gpio_pin_mux();
 
+	// TODO:  CSIS does not use HDMI
 	/* set hdmi mux  */
 	enable_hdmi_pin_mux();
 
@@ -167,8 +174,10 @@ void set_mux_conf_regs(void)
 
 	enable_usb_pin_mux();
 
+	// TODO:  verify spi pins for CSIS
 	enable_spi_pin_mux();
 
+	// TODO:  verify wlan pins for CSIS
 	enable_wlan_pin_mux();
 
 	enable_misc_pin_mux();
@@ -178,8 +187,10 @@ void sdram_init(void)
 {
 	config_dmm(&evm_lisa_map_regs);
 
-	config_ddr(0, NULL, &evm_ddr3_data[0], &evm_ddr3_cctrl_data,
-			&evm_ddr3_emif0_regs, 0);
+//	config_ddr(0, NULL, &evm_ddr3_data[0], &evm_ddr3_cctrl_data,
+//			&evm_ddr3_emif0_regs, 0);
+	config_ddr(0, NULL, &evm_ddr2_data[0], &evm_ddr2_cctrl_data,
+			&evm_ddr2_emif0_regs, 0);
 }
 #endif
 
@@ -214,23 +225,61 @@ static void watchdog_init(void)
  */
 static void gpio_init(void)
 {
-	u32  addr, val;
+	u32  addr;
+	u32 val = 0;
+	u32 mask;
 
-	/* Selection signal to CAMERA & UART Muxer */
-	addr = GPIO1_OE_REG;		/*GPIO_OE Output Enable Register*/
+	// Select i2c for AR0522 sensor
+	mask = (1<<15);
+	writel(mask, GPIO0_CLRDATA);	// Clear I2C0_18_EN (GP0.15) in GPIO_DATAOUT
+	addr = GPIO0_OE_REG;
 	val = __raw_readl(addr);
-	val &= ~(1<<16);
-	writel(val, addr);
-	writel((1<<16), GPIO1_CLRDATA);	/* Clear bit 16 in GPIO_DATAOUT */
+//	val |= mask;			// Make I2C0_18_EN (GP0.15) pin an input
+	val &= ~mask;			// Make I2C0_18_EN (GP0.15) pin an output
+	writel(val, addr);		// I2C0_18_EN (GP0.15) will pull low to disable onboard sensor  9/6/22 DAT
 
-	/* Reset Camera */
-	addr = GPIO2_OE_REG;		/*GPIO_OE Output Enable Register*/
+	// Put GP0 bits in output mode
+	// COEX1, COEX2, CAM_RESET, CAM_STROBE, RF_RTS, TPS_SLEEP all outputs
+	mask = (1<<13)|(1<<14)|(1<<16)|(1<<17)|(1<<21)|(1<<26);
+	writel(mask, GPIO0_CLRDATA);	// Clear bits in GPIO_DATAOUT
+	writel((1<<21), GPIO0_SETDATA);	// Make RF_RTS high
+	addr = GPIO0_OE_REG;
 	val = __raw_readl(addr);
-	val &= ~(1<<18);
-	writel(val, addr);
-	writel((1<<18), GPIO2_CLRDATA);	/* Clear bit 18 in GPIO_DATAOUT */
+	val &= ~mask;
+	writel(val, addr);		// Make GP0 pins be outputs, driven low
+
+	// Put GP1 bits in output mode
+	mask = (1<<12);			// WIFI_EN is output
+//	writel(mask, GPIO1_SETDATA);	// Set WIFI_EN bit in GPIO_DATAOUT
+	writel(mask, GPIO1_CLRDATA);	// Clear WIFI_EN bit in GPIO_DATAOUT
+	addr = GPIO1_OE_REG;
+	val = __raw_readl(addr);
+	val &= ~mask;
+	val |= (1<<11);			// Make WIFI_IRQ (GP!.11) be input
+	writel(val, addr);		// Make WIFI_EN (GP1.12) pins be output, driven low
+	printf("'gpio_init': WIFI_EN (GP1.12) low\n");
+
+	// Put GP2 bits in output mode
+	mask = (1<<11)|(1<<12);		// GPS_ENB, BT_EN are outputs
+	writel(mask, GPIO2_CLRDATA);	// Clear GPS_ENB, BT_EN bits in GPIO_DATAOUT
+	addr = GPIO2_OE_REG;
+	val = __raw_readl(addr);
+	val &= ~mask;
+	writel(val, addr);		// Make GPS_ENB (GP2.11), BT_EN (GP2.12) pins be outputs, driven low
+
+	// Reset AR0522 sensor
+	mask = (1<<16);			// CAM_RESET is output
+	addr = GPIO0_OE_REG;
+	val = __raw_readl(addr);
+	val |= mask;			// Make CAM_RESET (GP0.16) pin an input
+	writel(val, addr);		// Pin gets pulled up to do sensor reset
+
 	udelay(1000);
-	writel((1<<18), GPIO2_SETDATA);	/*Sets bit 18 in GPIO_DATAOUT*/
+
+	writel((1<<16), GPIO0_CLRDATA);	// Clear CAM_RESET (GP0.16) in GPIO_DATAOUT
+	val &= ~mask;
+	writel(val, addr);		// Make CAM_RESET (GP0.16) pin an output, driving pin low
+
 }
 
 /*
@@ -244,6 +293,18 @@ void reset_cpu(ulong addr)
         __raw_writel(addr, PRM_RSTCTRL);
 }
 
+// CSIS board uses I2C0 for image sensor, adc and audio codec
+// Also needs steering to image sensor via I2C0_18_EN (GP0.15,)
+// CSIS board uses I2C1 for PMIC
+//
+// DM388CSK uses I2C0 for the PMIC
+// DM388CSK uses I2C2 for HDMI_CODEC, which goes offboard to audio codec
+// DM388CSK uses I2C2 for the camera sensor
+//
+// TODO:  not clear how to select which I2C bus to use for 'i2c_write'
+// It's driven by 'cur_12c_bus' and may default to I2C0.  There is a func
+// 'i2c_set_bus_num()' in 'i2c_core.c' that does the selection (?)
+
 /*
  * Initialize PMIC ARM, HDVICP and CORE voltages to 1.35V
  * by using below formula
@@ -252,6 +313,8 @@ void reset_cpu(ulong addr)
  */
 void i2c_pmic_init(void)
 {
+	printf("'i2c_pmic_init'\n");
+
 	/* For ARM voltage = 1.35 volts*/
 	i2c_reg_write(PMIC_SLAVE_ADDRESS, CVDD_ARM_REG, PMIC_VDD_1V35);
 
@@ -264,9 +327,12 @@ void i2c_pmic_init(void)
 
 /*
  * Basic board specific setup.  Pinmux has been handled already.
+ * 'board_init' is called from the 'init_sequence_r' table in 'board_r.c'	7/11/22 DAT
  */
 int board_init(void)
 {
+
+	printf("'board_init'\n");		// 7/11/22 DAT
 
 	gd->bd->bi_boot_params = CONFIG_SYS_SDRAM_BASE + 0x100;
 	gpmc_init();
