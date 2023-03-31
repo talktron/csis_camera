@@ -1207,6 +1207,8 @@ static int tps65910_probe(struct platform_device *pdev)
 			return PTR_ERR(rdev);
 		}
 
+		dev_warn(tps65910->dev, "Initialized  %s regulator\n", pdev->name);	// 7/11/22 DAT
+
 		/* Save regulator for cleanup */
 		pmic->rdev[i] = rdev;
 	}
