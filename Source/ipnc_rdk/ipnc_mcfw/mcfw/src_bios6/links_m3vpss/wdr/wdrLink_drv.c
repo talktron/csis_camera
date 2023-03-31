@@ -245,7 +245,7 @@ Int32 WdrLink_drvCreate(WdrLink_Obj * pObj, WdrLink_CreateParams * pPrm)
 	sWdrParams.wdrSensor.type = WDR_BAYER_GRBG;
 #endif
 
-#if defined(IMGS_MICRON_MT9M034) || defined(IMGS_SONY_IMX104) || defined (IMGS_SONY_IMX136) || defined (IMGS_MICRON_AR0331)
+#if defined(IMGS_MICRON_MT9M034) || defined(IMGS_SONY_IMX104) || defined (IMGS_SONY_IMX136) || defined (IMGS_MICRON_AR0331) || defined(IMGS_MICRON_AR0522)
 	sWdrParams.wdrSensor.isDataCompressed = 1;
 #else
 	sWdrParams.wdrSensor.isDataCompressed = 0;
@@ -272,6 +272,18 @@ Int32 WdrLink_drvCreate(WdrLink_Obj * pObj, WdrLink_CreateParams * pPrm)
 	sWdrParams.wdrSensor.thr[3] = 3712;
 #elif defined(IMGS_MICRON_AR0331)
 	sWdrParams.wdrSensor.blackLevel = -168;
+	sWdrParams.wdrSensor.numKneePts = 5;
+	sWdrParams.wdrSensor.slope[0] = 1;
+	sWdrParams.wdrSensor.slope[1] = 2;    /* R1 */
+	sWdrParams.wdrSensor.slope[2] = 32;  /* R1*R2 */
+	sWdrParams.wdrSensor.slope[3] = 64;  /* R1*R2*R3 */
+	sWdrParams.wdrSensor.thr[0] = 0;
+	sWdrParams.wdrSensor.thr[1] = 1024;
+	sWdrParams.wdrSensor.thr[2] = 2560;
+	sWdrParams.wdrSensor.thr[3] = 3456;
+	sWdrParams.wdrSensor.thr[4] = 3968;
+#elif defined(IMGS_MICRON_AR0522)
+	sWdrParams.wdrSensor.blackLevel = -168;		// Same as AR0331   6/28/22 DAT
 	sWdrParams.wdrSensor.numKneePts = 5;
 	sWdrParams.wdrSensor.slope[0] = 1;
 	sWdrParams.wdrSensor.slope[1] = 2;    /* R1 */
