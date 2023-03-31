@@ -39,7 +39,7 @@ void usage()
 
 void alarm_handler(int sig)
 {
-	printf("TimeOut occure in boot_proc.\n");
+	printf("Timeout occured in boot_proc.\n");		// 8/23/22 DAT
 	printf("Program exit.\n");
 	exit(1);
 }
@@ -51,14 +51,19 @@ void alarm_handler(int sig)
  */
 int main(int argc,char *argv[]) {
 	int value;
+
+	DBG("main: boot_proc\n");		// 8/23/22 DAT
+
 	if(SysDrvInit(SYS_BOOT_MSG) < 0){
 		ERR("System message driver initialize failed.\n");
 		exit(1);
 	}
+
 	if(argc != 2){
 		usage();
 	}else{
 		value = atoi(argv[1]);
+
 		if(signal(SIGALRM, alarm_handler) != SIG_ERR){
 			alarm(PROC_TIMEOUT);
 			if(sizeof(value) != SysDoBootProc(&value, sizeof(value)))
