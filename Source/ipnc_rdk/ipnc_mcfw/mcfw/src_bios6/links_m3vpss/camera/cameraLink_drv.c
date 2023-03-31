@@ -216,7 +216,13 @@ Int32 CameraLink_drvCreateSensor(CameraLink_Obj * pObj, UInt16 instId)
     #ifdef IMGS_SONY_IMX140
     if ((pInstPrm->videoDecoderId == FVID2_ISS_SENSOR_IMX140_DRV) && (pInstPrm->vipInstId == ISS_CAPT_INST_VP || pInstPrm->vipInstId == ISS_CAPT_INST_VP))
     #endif
-    {
+
+	// 6/28/22 DAT
+	#ifdef IMGS_MICRON_AR0522
+	if ((pInstPrm->videoDecoderId == FVID2_ISS_SENSOR_AR0522_DRV) && (pInstPrm->vipInstId == ISS_CAPT_INST_VP || pInstPrm->vipInstId == ISS_CAPT_INST_VP))
+	#endif
+
+	{
         status = Iss_platformSelectSensor(pInstPrm->videoDecoderId, pInstPrm->vipInstId);
     }
 
@@ -867,11 +873,15 @@ Int32 CameraLink_drvCreateInst(CameraLink_Obj * pObj, UInt16 instId)
     {
     	isifCfg.startX = 0;
     }
-    else if (FVID2_ISS_SENSOR_AR0330_DRV == pInstPrm->videoDecoderId)
-    {
-    	isifCfg.startX = 0;
-    }
-    else
+	else if (FVID2_ISS_SENSOR_AR0330_DRV == pInstPrm->videoDecoderId)
+	{
+		isifCfg.startX = 0;
+	}
+	else if (FVID2_ISS_SENSOR_AR0522_DRV == pInstPrm->videoDecoderId)
+	{
+		isifCfg.startX = 0;			// 6/28/22 DAT
+	}
+	else
     {
 		isifCfg.horzOffset = pInst->createArgs.inFmt.width * 2;
     }
