@@ -675,6 +675,8 @@ static int wl18xx_identify_chip(struct wl1271 *wl)
 {
 	int ret = 0;
 
+	wl1271_info("<<<<<<< 'wl18xx_identify_chip' chip.id=%d >>>>>>>", wl->chip.id );		// 2/24/23 DAT
+
 	switch (wl->chip.id) {
 	case CHIP_ID_185x_PG20:
 		wl1271_debug(DEBUG_BOOT, "chip id 0x%x (185x PG20)",
@@ -830,6 +832,8 @@ static int wl18xx_boot_soft_reset(struct wl1271 *wl)
 {
 	int ret;
 
+	wl1271_info("<<<<<<< '%s' >>>>>>>", "wl18xx_boot_soft_reset");		// 1/31/23 DAT
+
 	/* disable Rx/Tx */
 	ret = wlcore_write32(wl, WL18XX_ENABLE, 0x0);
 	if (ret < 0)
@@ -982,6 +986,8 @@ static int wl18xx_enable_interrupts(struct wl1271 *wl)
 	u32 event_mask, intr_mask;
 	int ret;
 
+	wl1271_info("<<<<<<< '%s' >>>>>>>", "wl18xx_enable_interrupts");		// 1/31/23 DAT
+
 	event_mask = WL18XX_ACX_EVENTS_VECTOR;
 	intr_mask = WL18XX_INTR_MASK;
 
@@ -1008,6 +1014,8 @@ out:
 static int wl18xx_boot(struct wl1271 *wl)
 {
 	int ret;
+
+	wl1271_info("<<<<<<< '%s' >>>>>>>", "wl18xx_boot");		// 1/31/23 DAT
 
 	ret = wl18xx_pre_boot(wl);
 	if (ret < 0)
@@ -2033,6 +2041,8 @@ static int wl18xx_probe(struct platform_device *pdev)
 	struct wl1271 *wl;
 	struct ieee80211_hw *hw;
 	int ret;
+
+	wl1271_info("<<<<<<< '%s' >>>>>>>", "wl18xx_probe");		// 1/31/23 DAT
 
 	hw = wlcore_alloc_hw(sizeof(struct wl18xx_priv),
 			     WL18XX_AGGR_BUFFER_SIZE,
