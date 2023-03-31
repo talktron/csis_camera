@@ -81,9 +81,13 @@ int fat_set_blk_dev(struct blk_desc *dev_desc, disk_partition_t *info)
 
 	/* Check for FAT12/FAT16/FAT32 filesystem */
 	if (!memcmp(buffer + DOS_FS_TYPE_OFFSET, "FAT", 3))
+	{
 		return 0;
+	}
 	if (!memcmp(buffer + DOS_FS32_TYPE_OFFSET, "FAT32", 5))
+	{
 		return 0;
+	}
 
 	cur_dev = NULL;
 	return -1;
