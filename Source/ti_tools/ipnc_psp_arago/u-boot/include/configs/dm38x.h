@@ -39,7 +39,8 @@
 #define CONFIG_VERSION_VARIABLE
 
 #ifdef CONFIG_DDR_533_MHZ
-#define	CONFIG_DDR_533_MHZ		1
+//#define	CONFIG_DDR_533_MHZ		1
+#undef CONFIG_DDR_533_MHZ	// 6/9/22 DAT
 #endif
 
 #ifdef CONFIG_PHY_MMD_INDIRECT_WRITE
@@ -153,6 +154,7 @@
 /**
  * Physical Memory Map
  */
+/* TODO:  for CSIS, adjust this to be 256MB  6/9/22 DAT  */
 #define CONFIG_NR_DRAM_BANKS		1		/* 1 banks of DRAM */
 #define PHYS_DRAM_1_SIZE		0x40000000	/* 1GB */
 #define CONFIG_MAX_RAM_BANK_SIZE	(1024 << 20)	/* 1024MB */
