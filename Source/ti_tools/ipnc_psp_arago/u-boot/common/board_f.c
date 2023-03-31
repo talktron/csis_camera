@@ -1056,8 +1056,13 @@ void board_init_f(ulong boot_flags)
 	gd->flags = boot_flags;
 	gd->have_console = 0;
 
+	printf( "Enter'board_init_f'\n");		// 7/11/22 DAT
+
 	if (initcall_run_list(init_sequence_f))
+	{
+		printf( "'board_init_f' fail\n");	// 7/11/22 DAT
 		hang();
+	}
 
 #if !defined(CONFIG_ARM) && !defined(CONFIG_SANDBOX) && \
 		!defined(CONFIG_EFI_APP)

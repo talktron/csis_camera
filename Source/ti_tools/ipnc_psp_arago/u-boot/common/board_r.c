@@ -353,7 +353,8 @@ __weak int power_init_board(void)
 
 static int initr_announce(void)
 {
-	debug("Now running in RAM - U-Boot at: %08lx\n", gd->relocaddr);
+//	debug("Now running in RAM - U-Boot at: %08lx\n", gd->relocaddr);
+	printf("Now running in RAM - U-Boot at: %08lx\n", gd->relocaddr);	// 7/11/22 DAT
 	return 0;
 }
 
@@ -991,8 +992,13 @@ void board_init_r(gd_t *new_gd, ulong dest_addr)
 		init_sequence_r[i] += gd->reloc_off;
 #endif
 
+	printf("Enter 'board_init_r'\n");	// 7/11/22 DAT
+
 	if (initcall_run_list(init_sequence_r))
+	{
+		printf("'board_init_r' sequence fail\n");	// 7/11/22 DAT
 		hang();
+	}
 
 	/* NOTREACHED - run_main_loop() does not return */
 	hang();
