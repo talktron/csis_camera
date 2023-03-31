@@ -162,6 +162,8 @@ int ieee80211_hw_config(struct ieee80211_local *local, u32 changed)
 {
 	int ret = 0;
 
+	wiphy_info( local->hw.wiphy, "<<<<<<< 'ieee80211_hw_config' >>>>>>>>\n");		// 2/7/23 DAT
+
 	might_sleep();
 
 	if (!local->use_chanctx)
@@ -798,6 +800,8 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
 	netdev_features_t feature_whitelist;
 	struct cfg80211_chan_def dflt_chandef = {};
 
+	wiphy_warn(hw->wiphy, "<<<<<<< 'ieee80211_register_hw' >>>>>>>>\n");		// 2/7/23 DAT
+
 	if (ieee80211_hw_check(hw, QUEUE_CONTROL) &&
 	    (local->hw.offchannel_tx_hw_queue == IEEE80211_INVAL_HW_QUEUE ||
 	     local->hw.offchannel_tx_hw_queue >= local->hw.queues))
@@ -1204,6 +1208,8 @@ static int __init ieee80211_init(void)
 {
 	struct sk_buff *skb;
 	int ret;
+
+	printk(KERN_DEBUG "<<<<<<<< 'ieee80211_init' >>>>>>>\n" );		// 2/7/23 DAT
 
 	BUILD_BUG_ON(sizeof(struct ieee80211_tx_info) > sizeof(skb->cb));
 	BUILD_BUG_ON(offsetof(struct ieee80211_tx_info, driver_data) +
