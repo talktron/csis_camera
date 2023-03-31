@@ -216,6 +216,8 @@ static int i2c_mux_disconnect_all(void)
  */
 static void i2c_init_bus(unsigned int bus_no, int speed, int slaveaddr)
 {
+//	printf( "'i2c_init_bus': bus_no=%d, speed=%d, slaveaddr=%d\n", bus_no, speed, slaveaddr );	// 7/11/22 DAT
+
 	if (bus_no >= CONFIG_SYS_NUM_I2C_BUSES)
 		return;
 
@@ -243,8 +245,11 @@ __weak void i2c_init_board(void)
  */
 void i2c_init_all(void)
 {
+//	printf( "'i2c_init_all'\n" );	// 7/11/22 DAT
+
 	i2c_init_board();
-	i2c_set_bus_num(CONFIG_SYS_SPD_BUS_NUM);
+//	i2c_set_bus_num(CONFIG_SYS_SPD_BUS_NUM);
+	i2c_set_bus_num(1);		// Select PMIC on I2C1  7/11/22 DAT
 	return;
 }
 
@@ -276,6 +281,8 @@ unsigned int i2c_get_bus_num(void)
 int i2c_set_bus_num(unsigned int bus)
 {
 	int max;
+
+	printf( "'i2c_set_bus_num': bus=%d\n", bus );	// 7/11/22 DAT
 
 	if ((bus == I2C_BUS) && (I2C_ADAP->init_done > 0))
 		return 0;
