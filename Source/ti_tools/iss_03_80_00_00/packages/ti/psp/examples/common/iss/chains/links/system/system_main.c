@@ -133,10 +133,10 @@ Int32 System_init()
 
     Semaphore_Params semParams;
 
-#ifdef SYSTEM_DEBUG
+//#ifdef SYSTEM_DEBUG
     Vps_printf(" %d: SYSTEM  : System Init in progress !!!\n",
                Clock_getTicks());
-#endif
+//#endif
 
     VpsUtils_prfInit();
 
@@ -220,9 +220,9 @@ Int32 System_init()
 
     VpsUtils_prfLoadRegister(gSystem_obj.tsk, "SYSTEM  ");
 
-#ifdef SYSTEM_DEBUG
+//#ifdef SYSTEM_DEBUG
     Vps_printf(" %d: SYSTEM  : System Init Done !!!\n", Clock_getTicks());
-#endif
+//#endif
 
     return status;
 
