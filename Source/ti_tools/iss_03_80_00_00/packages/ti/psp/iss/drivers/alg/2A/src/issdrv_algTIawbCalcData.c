@@ -12,6 +12,10 @@
  * ===================================================================*/
 #include <alg_ti_aewb_priv.h>
 
+#ifdef IMGS_MICRON_AR0522
+#include "issdrv_algTIawbCalcData_AR0522.c"		// 6/28/22 DAT
+#endif
+
 #ifdef IMGS_MICRON_AR0331
 #include "issdrv_algTIawbCalcData_AR0331.c"
 #endif

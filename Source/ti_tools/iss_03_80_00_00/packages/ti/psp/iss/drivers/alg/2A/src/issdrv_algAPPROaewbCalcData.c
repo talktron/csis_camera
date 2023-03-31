@@ -253,6 +253,8 @@ void *APPRO_2AEngModeParm(void)
 
 #ifdef IMGS_MICRON_AR0331	 
 	APPRO_2AEngModeAR0331(&EngineerCfg);
+#elif IMGS_MICRON_AR0522
+	APPRO_2AEngModeAR0331(&EngineerCfg);		// AR0522 same as AR0331 for now  7/29/22 DAT
 #elif IMGS_PANASONIC_MN34041
 	APPRO_2AEngModeMN34041(&EngineerCfg);
 #elif IMGS_SONY_IMX136	

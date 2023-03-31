@@ -888,6 +888,12 @@ void TI_2A_UpdateDynamicParams1(Iss_2AObj *pObj)
         gTi2aControlParams.update |= TI2A_UPDATE_CONTROL_PARAMS_2A;
 
     }
+#ifdef IMGS_MICRON_AR0522
+	if (gTi2aControlParams.framerate != pObj->FrameRate) {		// 7/29/22 DAT
+		gTi2aControlParams.framerate = pObj->FrameRate;
+		gTi2aControlParams.update |= TI2A_UPDATE_CONTROL_PARAMS_2A;
+	}
+#endif
 #ifdef IMGS_MICRON_AR0331
 	if (gTi2aControlParams.framerate != pObj->FrameRate) {
 		gTi2aControlParams.framerate = pObj->FrameRate;

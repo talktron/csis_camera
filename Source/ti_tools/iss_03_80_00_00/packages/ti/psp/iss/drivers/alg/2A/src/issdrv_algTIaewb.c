@@ -203,7 +203,8 @@ void *ALG_aewbCreate(int aewbNumWinH,int aewbNumWinV,int aewbNumPix)
   gTi2aControlParams.stepSize            = 50;		//200;		//50
   gTi2aControlParams.aGainMin            = 100;		//1000;		//100
   gTi2aControlParams.maxExposure         = 20000; //WDR
-#elif defined (IMGS_MICRON_AR0331) | defined (IMGS_MICRON_AR0330)
+// 7/29/22 DAT
+#elif defined (IMGS_MICRON_AR0331) | defined (IMGS_MICRON_AR0330) | defined (IMGS_MICRON_AR0522)
   gTi2aControlParams.aGainMax            = 8000;
   gTi2aControlParams.minExposure         = 100;		//5000;		//100
   gTi2aControlParams.stepSize            = 50;		//200;		//50
@@ -1654,6 +1655,13 @@ int ALG_aewbControl(void)
 		gTi2aControlParams.maxExposure = 33333;
 #endif
 #endif
+
+#ifdef IMGS_MICRON_AR0522
+	if (gTi2aControlParams.framerate > 30)			// 7/29/22 DAT
+		gTi2aControlParams.maxExposure = 16667;
+	else
+		gTi2aControlParams.maxExposure = 33333;
+#endif
       }
       gTi2aControlParams.update |= TI2A_UPDATE_CONTROL_PARAMS_2A;
       gTi2aControlParams.update &= (~TI2A_UPDATE_AE_DAY_NIGHT);
@@ -1673,6 +1681,13 @@ int ALG_aewbControl(void)
 	else
 		gTi2aControlParams.maxExposure = 33333;
 #endif
+#endif
+
+#ifdef IMGS_MICRON_AR0522
+	if (gTi2aControlParams.framerate > 30)			// 7/29/22 DAT
+		gTi2aControlParams.maxExposure = 16667;
+	else
+		gTi2aControlParams.maxExposure = 33333;
 #endif
 
       gTi2aControlParams.update &= (~TI2A_UPDATE_CONTROL_PARAMS_2A);
