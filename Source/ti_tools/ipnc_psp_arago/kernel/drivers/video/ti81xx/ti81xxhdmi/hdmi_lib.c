@@ -355,7 +355,8 @@ int hdmi_core_ddc_edid(u8 *pEDID, int ext)
 	}
 	/* HDMI_CORE_DDC_STATUS__NO_ACK */
 	if (FLD_GET(l, 5, 5) == 1) {
-		printk("I2C No Ack\n\r");
+//		printk("I2C No Ack\n\r");
+		printk("hdmi_lib.c: I2C No Ack 10/30/22 DAT\n\r");
 		/* Abort transaction */
 		REG_FLD_MOD(ins, HDMI_CORE_DDC_CMD, 0xf, 3, 0);
 		while (FLD_GET(hdmi_read_reg(ins, sts), 4, 4) == 1);
