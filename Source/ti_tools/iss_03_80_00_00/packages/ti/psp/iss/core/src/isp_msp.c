@@ -981,6 +981,9 @@ MSP_ERROR_TYPE MSP_ISP_config(MSP_HANDLE handle, MSP_INDEXTYPE tConfigIndex,
 #ifdef IMGS_SONY_IMX140
             isp_regs->ISP5_CTRL &= ~(1 << 22); 
 #endif
+#ifdef IMGS_MICRON_AR0522				// 7/29/22 DAT
+            //isp_regs->ISP5_CTRL &= ~(1 << 22); 
+#endif	
 #ifdef IMGS_MICRON_AR0331
             //isp_regs->ISP5_CTRL &= ~(1 << 22); 
 #endif	

@@ -77,6 +77,12 @@ ISP_RETURN issIpipePreviewParamsInit(ipipe_cfg_t * cfg,
     cfg->src_cfg->dims.vps = 0;
     cfg->src_cfg->dims.v_size = sizes->v_size_crop;
 #endif
+#ifdef IMGS_MICRON_AR0522
+    cfg->src_cfg->dims.hps = 0;                            // 0		7/29/22 DAT
+    cfg->src_cfg->dims.hsz = sizes->h_size_crop;
+    cfg->src_cfg->dims.vps = 0;                            // 0
+    cfg->src_cfg->dims.v_size = sizes->v_size_crop;
+#endif
 #ifdef IMGS_MICRON_AR0331
     cfg->src_cfg->dims.hps = 0;                            // 0
     cfg->src_cfg->dims.hsz = sizes->h_size_crop;
