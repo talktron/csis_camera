@@ -500,6 +500,9 @@ void sata_pll_config(void)
 
 static void peripheral_enable(void)
 {
+	/* Enable gpio0 bank */
+	writel(PRCM_MOD_EN | readl(&cmalwon->gpio0clkctrl),
+					&cmalwon->gpio0clkctrl);	// 7/11/22 DAT
 	/* Enable gpio1 gpio2 gpio3 banks */
 	writel(PRCM_MOD_EN | readl(&cmalwon->gpio1clkctrl),
 					&cmalwon->gpio1clkctrl);
