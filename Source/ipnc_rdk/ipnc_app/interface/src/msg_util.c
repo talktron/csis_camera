@@ -47,7 +47,7 @@ int Msg_Init( int msgKey )
 	if(  qid < 0 )
 	{
 		qid = msgget(key,IPC_CREAT|0666);
-		__D("Creat queue id:%d\n",qid);
+		__D("Msg_Init: Create queue id:%d\n",qid);	// 8/23/22 DAT
 	}
 
 	__D("queue id:%d\n",qid);
