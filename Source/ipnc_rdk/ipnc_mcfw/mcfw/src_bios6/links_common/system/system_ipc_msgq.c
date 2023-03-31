@@ -26,8 +26,8 @@ Int32 System_ipcMsgQHeapCreate()
         if (procId == SYSTEM_IPC_MSGQ_OWNER_PROC_ID)
         {
             /* create heap */
-            Vps_printf(" %d: SYSTEM: Creating MsgQ Heap [%s] ...\n",
-                       Utils_getCurTimeInMsec(), SYSTEM_IPC_MSGQ_HEAP_NAME);
+            Vps_printf(" %d: (SRC_BIOS6) SYSTEM: Creating MsgQ Heap [%s] ...\n",
+                       Utils_getCurTimeInMsec(), SYSTEM_IPC_MSGQ_HEAP_NAME);		// 1/17/23 DAT
 
             srHeap = SharedRegion_getHeap(SYSTEM_IPC_SR_NON_CACHED_DEFAULT);
             UTILS_assert(srHeap != NULL);
@@ -53,8 +53,8 @@ Int32 System_ipcMsgQHeapCreate()
             retryCount = 10;
             while (retryCount)
             {
-                Vps_printf(" %d: SYSTEM: Opening MsgQ Heap [%s] ...\n",
-                           Utils_getCurTimeInMsec(), SYSTEM_IPC_MSGQ_HEAP_NAME);
+                Vps_printf(" %d: (SRC_BIOS6) SYSTEM: Opening MsgQ Heap [%s] ...\n",
+                           Utils_getCurTimeInMsec(), SYSTEM_IPC_MSGQ_HEAP_NAME);		// 1/17/23 DAT
 
                 status =
                     HeapMemMP_open(SYSTEM_IPC_MSGQ_HEAP_NAME,

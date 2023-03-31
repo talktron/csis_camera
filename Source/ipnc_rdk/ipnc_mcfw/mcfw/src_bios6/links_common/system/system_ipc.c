@@ -80,8 +80,8 @@ Void System_ipcAttach()
         {
             do
             {
-                Vps_printf(" %d: SYSTEM: Attaching to [%s] ... \n",
-                           Utils_getCurTimeInMsec(), System_getProcName(procId));
+                Vps_printf(" %d: (SRC_BIOS6) SYSTEM: Attaching to [%s] ... \n",
+                           Utils_getCurTimeInMsec(), System_getProcName(procId));	// 1/17/23 DAT
 
                 syslinkProcId = System_getSyslinkProcId(procId);
 
@@ -91,8 +91,8 @@ Void System_ipcAttach()
                     Task_sleep(50);
                 }
             } while (status < 0);
-            Vps_printf(" %d: SYSTEM: Attaching to [%s] ... SUCCESS !!!\n",
-                       Utils_getCurTimeInMsec(), System_getProcName(procId));
+            Vps_printf(" %d: (SRC_BIOS6) SYSTEM: Attaching to [%s] ... SUCCESS !!!\n",
+                       Utils_getCurTimeInMsec(), System_getProcName(procId));		// 1/17/23 DAT
         }
         i++;
     }
@@ -101,7 +101,7 @@ Void System_ipcAttach()
 
 Int32 System_ipcInit()
 {
-    Vps_printf(" %d: SYSTEM: IPC init in progress !!!\n", Utils_getCurTimeInMsec());
+    Vps_printf(" %d: (SRC_BIOS6) SYSTEM: IPC init in progress !!!\n", Utils_getCurTimeInMsec());	// 1/17/23 DAT
 
     System_ipcAttach();
 
@@ -109,7 +109,7 @@ Int32 System_ipcInit()
 
     System_ipcNotifyInit();
 
-    Vps_printf(" %d: SYSTEM: IPC init DONE !!!\n", Utils_getCurTimeInMsec());
+    Vps_printf(" %d: (SRC_BIOS6) SYSTEM: IPC init DONE !!!\n", Utils_getCurTimeInMsec());	// 1/17/23 DAT
 
     return FVID2_SOK;
 }
