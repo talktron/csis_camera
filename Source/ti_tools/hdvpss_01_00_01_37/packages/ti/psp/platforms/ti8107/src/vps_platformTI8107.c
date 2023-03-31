@@ -65,7 +65,9 @@
 /* THS7353 filter I2C address present in VC daughter card */
 #define VPS_VC_BOARD_THS7353_I2C_ADDR   (0x2Cu)
 
-#define VPS_PLATFORM_EVM_I2C_INST_ID    (VPS_DEVICE_I2C_INST_ID_2)
+/* CSIS board uses i2c0, CSK's use i2c2  9/6/22 DAT */
+//#define VPS_PLATFORM_EVM_I2C_INST_ID    (VPS_DEVICE_I2C_INST_ID_2)
+#define VPS_PLATFORM_EVM_I2C_INST_ID    (VPS_DEVICE_I2C_INST_ID_0)
 
 /** \brief PLL Control Module Base Address*/
 #define VPS_CONTROL_MODULE_PLL_CTRL_BASE_ADDR   (CSL_TI8107_PLL_BASE)
@@ -280,6 +282,8 @@ Int32 Vps_platformTI8107Init(Vps_PlatformInitParams *initParams)
 {
     Int32 status = FVID2_SOK;
 
+    Vps_printf("<<<<<<< Vps_platformTI8107Init >>>>>>>\n");	// 8/31/22 DAT
+
 #ifdef CONFIG_PIN_MUX
     if (TRUE == initParams->isPinMuxSettingReq)
     {
@@ -318,6 +322,9 @@ Int32 Vps_platformTI8107DeviceInit(Vps_PlatformDeviceInitParams *initPrms)
 {
     Int32 status = FVID2_SOK;
     Semaphore_Params semParams;
+
+    Vps_printf("<<<<<<< %s: %s: >>>>>>>\n", __FILE__, __FUNCTION__);	// 9/6/22 DAT
+
 #ifdef PLATFORM_EVM_SI
     UInt8 i2cCnt = 0;
     /* TI8107 has 4 I2C instances. */
@@ -373,10 +380,13 @@ Int32 Vps_platformTI8107DeviceInit(Vps_PlatformDeviceInitParams *initPrms)
     deviceInitPrm.isI2cInitReq = initPrms->isI2cInitReq;
 
     /* TI8107 uses only I2C[2], so modify the sampling frequency */
+    /* CSIS uses I2C[0] */
     deviceInitPrm.i2cRegs[VPS_PLATFORM_EVM_I2C_INST_ID]
-        = (Ptr)CSL_TI8107_I2C2_BASE;
+//        = (Ptr)CSL_TI8107_I2C2_BASE;
+        = (Ptr)CSL_TI8107_I2C0_BASE;				// 9/6/22 DAT
     deviceInitPrm.i2cIntNum[VPS_PLATFORM_EVM_I2C_INST_ID]
-        = CSL_INTC_EVENTID_I2CINT2;
+//        = CSL_INTC_EVENTID_I2CINT2;
+        = CSL_INTC_EVENTID_I2CINT0;				// 9/6/22 DAT
     deviceInitPrm.i2cClkKHz[VPS_PLATFORM_EVM_I2C_INST_ID]
         = 400;
 
@@ -388,6 +398,12 @@ Int32 Vps_platformTI8107DeviceInit(Vps_PlatformDeviceInitParams *initPrms)
 #endif	
 
     status = Vps_deviceInit ( &deviceInitPrm );
+
+    Vps_printf("<<<<<<< %s: using i2c%d (0x%08X) @%dkHz >>>>>>>\n", 
+	__FUNCTION__,
+        VPS_PLATFORM_EVM_I2C_INST_ID,
+        deviceInitPrm.i2cRegs[VPS_PLATFORM_EVM_I2C_INST_ID],
+        deviceInitPrm.i2cClkKHz[VPS_PLATFORM_EVM_I2C_INST_ID] );	// 9/6/22 DAT
 
 #ifdef ENABLE_I2C_PROBE_ON_INIT
     if (TRUE == initPrms->isI2cInitReq &&
@@ -749,6 +765,8 @@ static Int32 Vps_getDividers(Vps_VideoPllCtrl *config, UInt32 reqOutClk,
 #ifdef CONFIG_PIN_MUX
 static Int32 Vps_platformTI8107SetPinMux(void)
 {
+    Vps_printf("<<<<<<< Vps_platformTI8107SetPinMux >>>>>>>\n");	// 8/31/22 DAT
+
     /* Vout 0 configuration DVO2 Function 1*/
     /* TODO There are two pins for the fid. Need to see whichone is used */
     REG32(CSL_TI8107_CTRL_MODULE_BASE + 0x0AB8) = 0x1;   /* vout0_fid_mux1 */
@@ -918,6 +936,7 @@ static Int32 Vps_platformTI8107SetIntMux(void)
     int_mux |= (4 << 24);
     REG32(CSL_TI8107_CTRL_MODULE_BASE + 0x0f64) = int_mux;
 
+    Vps_printf("Vps_platformTI8107SetIntMux: int_mux= 0x%08X\n", int_mux);	// 8/31/22 DAT
     return (FVID2_SOK);
 }
 #endif
@@ -1297,7 +1316,8 @@ static Int32 Vps_platformTI8107EnableI2c(void)
     }
     else
     {
-        Vps_printf("=== I2C0/2 Clk is active ===\n");
+//        Vps_printf("=== I2C0/2 Clk is active ===\n");
+        Vps_printf("=== I2C0/2 Clk is active 8/31/22 DAT ===\n");
     }
     /* Change it to #if 1 to enable I2C1 clk */
 #if 0
