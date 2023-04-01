@@ -39,7 +39,7 @@ void usage()
 
 void alarm_handler(int sig)
 {
-	printf("Timeout occured in boot_proc.\n");		// 8/23/22 DAT
+	printf("Timeout occured in boot_proc.\n");		// 8/23/22 DAT 
 	printf("Program exit.\n");
 	exit(1);
 }
